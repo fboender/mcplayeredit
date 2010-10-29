@@ -15,7 +15,8 @@ if sys.version_info[:2] < (2, 6):
 import os
 import shutil
 import struct
-sys.path.insert(0, 'lib')
+basepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])))
+sys.path.insert(0, os.path.join(basepath, 'lib'))
 import icmd
 import nbt
 sys.path.pop(0)
