@@ -242,7 +242,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			inventory[slot['Slot'].value] = slot
 		return(inventory)
 
-	def load(self, *filename):
+	def load(self, filename, *args):
 		"""
 		Load a player's data
 		Load a player's data. You can either specify the full path to the
@@ -258,7 +258,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if not self._checkmodified():
 			return(False)
 
-		filename = ' '.join(filename)
+		filename = '%s %s' % (filename, ' '.join(args))
 
 		try:
 			# Try to load a world by number.
@@ -361,7 +361,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				else:
 					print
 
-	def give(self, count, *item):
+	def give(self, count, item, *args):
 		"""
 		Add items to the players inventory
 		Tries to add COUNT times ITEM to the player inventory. COUNT must be in
@@ -383,7 +383,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		item = ' '.join(item)
+		item = '%s %s' % (item, ' '.join(args))
 
 		# Validate some input
 		try:
@@ -575,7 +575,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			self.level['Data']['SnowCovered'].value = 1
 			self.modified = True
 
-	def bookmark(self, *bookmark):
+	def bookmark(self, bookmark, *args):
 		"""
 		Create bookmark for later warping
 		Creates a bookmark named BOOKMARK at the current player's position. If
@@ -583,7 +583,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		can later warp to that bookmark using the `warp` command.
 		"""
 		self._checkloaded()
-		bookmark = ' '.join(bookmark)
+		bookmark = '%s %s' % (bookmark, ' '.join(args))
 		self.bookmarks[bookmark] = (
 			self.level['Data']['Player']['Pos'][0].value,
 			self.level['Data']['Player']['Pos'][1].value,
@@ -591,14 +591,13 @@ class MCPlayerEdit(icmd.ICmdBase):
 		)
 		self._output("Bookmark '%s' created." % (bookmark))
 
-	def warp(self, *bookmark):
+	def warp(self, bookmark = None, *args):
 		"""
 		Move player to bookmarked point
 		Moves the player to a bookmarked point set with the `bookmark` command.
 		If no BOOKMARK is given, list the current bookmarks.
 		"""
 		self._checkloaded()
-		bookmark = ' '.join(bookmark)
 		if not bookmark:
 			# List bookmarks
 			print "The following bookmarks have been set:"
@@ -607,6 +606,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 				x, y, z = bookmark[1]
 				print "  %-30s: %8f %8f %8f" % (name, x, y, z)
 		else:
+			bookmark = '%s %s' % (bookmark, ' '.join(args))
+
 			try:
 				i = [b.lower() for b in self.bookmarks.keys()].index(bookmark.lower())
 				k = self.bookmarks.keys()[i]
