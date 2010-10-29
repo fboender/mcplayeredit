@@ -98,26 +98,15 @@ class ICmdBase(object):
 
 		# Get usage from the parameters
 		args = inspect.getargspec(func)
-		allargs = args.args
-		if args.varargs:
-			allargs += [args.varargs, ]
-		parcnt_max = len(allargs) - 1
-		parcnt_min = len(allargs) - 1 - len(args.defaults or '')
-		help_usage = command
-		for i in range(1, len(allargs)):
-			if i <= parcnt_min:
-				help_usage += " <%s>" % (allargs[i])
-			else:
-				help_usage += " [%s]" % (allargs[i])
 
-		#parcnt_max = len(args.args) - 1
-		#parcnt_min = len(args.args) - 1 - len(args.defaults or '')
-		#help_usage = command
-		#for i in range(1, len(args.args)):
-		#	if i <= parcnt_min:
-		#		help_usage += " [%s]" % (args.args[i])
-		#	else:
-		#		help_usage += " <%s>" % (args.args[i])
+		parcnt_max = len(args.args) - 1
+		parcnt_min = len(args.args) - 1 - len(args.defaults or '')
+		help_usage = command
+		for i in range(1, len(args.args)):
+			if i <= parcnt_min:
+				help_usage += " <%s>" % (args.args[i])
+			else:
+				help_usage += " [%s]" % (args.args[i])
 
 		return([help_short, help_desc, help_usage])
 
@@ -192,16 +181,14 @@ class ICmd(object):
 
 		# Introspect how many arguments the function takes and how many the
 		# user gave.
+
+
 		args = inspect.getargspec(func)
-		allargs = args.args
-		if args.varargs:
-			allargs += [args.varargs, ]
 
 		parcnt_given = len(params)
-		parcnt_max = len(allargs) - 1
-		parcnt_min = len(allargs) - 1 - len(args.defaults or '')
+		parcnt_max = len(args.args) - 1
+		parcnt_min = len(args.args) - 1 - len(args.defaults or '')
 		logging.info("dispatch: params: given: %i, min: %i, max: %i" % (parcnt_given, parcnt_min, parcnt_max))
-
 		if parcnt_given < parcnt_min:
 			raise ICmdError(2, 'Not enough parameters given')
 		elif not args.varargs and parcnt_given > parcnt_max:
