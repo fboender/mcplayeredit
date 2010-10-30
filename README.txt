@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.2
+MCPlayerEdit  v0.3
 
 About
 -----
@@ -139,6 +139,7 @@ Credits:
 
  Testing
 
-    maramonster (testing, suggestions)
-    Camel       (suggestions)
-    LadyCygna   (testing, suggestions)
+    maramonster  (testing, suggestions)
+    Camel        (suggestions)
+    LadyCygna    (testing, suggestions)
+    yobbobandana (bugfix)
