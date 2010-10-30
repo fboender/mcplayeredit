@@ -37,7 +37,7 @@ Compatibly
 
 Developed for and on:
 
-    Unbuntu 10.04 / Python 2.6.5
+    Ubuntu 10.04 / Python 2.6.5
 
 Should work on:
 

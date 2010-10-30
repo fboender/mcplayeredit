@@ -259,7 +259,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if not self._checkmodified():
 			return(False)
 
-		filename = '%s %s' % (filename, ' '.join(args))
+		if args:
+			filename = '%s %s' % (filename, ' '.join(args))
 
 		try:
 			# Try to load a world by number.
@@ -384,7 +385,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		item = '%s %s' % (item, ' '.join(args))
+		if args:
+			item = '%s %s' % (item, ' '.join(args))
 
 		# Validate some input
 		try:
@@ -584,7 +586,10 @@ class MCPlayerEdit(icmd.ICmdBase):
 		can later warp to that bookmark using the `warp` command.
 		"""
 		self._checkloaded()
-		bookmark = '%s %s' % (bookmark, ' '.join(args))
+
+		if args:
+			bookmark = '%s %s' % (bookmark, ' '.join(args))
+
 		self.bookmarks[bookmark] = (
 			self.level['Data']['Player']['Pos'][0].value,
 			self.level['Data']['Player']['Pos'][1].value,
@@ -607,7 +612,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 				x, y, z = bookmark[1]
 				print "  %-30s: %8f %8f %8f" % (name, x, y, z)
 		else:
-			bookmark = '%s %s' % (bookmark, ' '.join(args))
+			if args:
+				bookmark = '%s %s' % (bookmark, ' '.join(args))
 
 			try:
 				i = [b.lower() for b in self.bookmarks.keys()].index(bookmark.lower())
