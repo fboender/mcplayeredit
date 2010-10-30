@@ -70,7 +70,7 @@ Some usage examples:
     > load 1
     Loaded.
 
-    World 1> move spaw
+    World 1> move spawn
     Moved spawnpoint to current player position
 
     World 1> list
@@ -143,3 +143,4 @@ Credits:
     Camel        (suggestions)
     LadyCygna    (testing, suggestions)
     yobbobandana (bugfix)
+	Lillefix     (documentation fix)
