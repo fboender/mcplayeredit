@@ -1,0 +1,39 @@
+v0.4 (31 Oct 2010)
+ - New items added:
+   Pumpkin         (86)
+   Bloodstone      (87)
+   Slow Sand       (88)
+   Lightstone      (89)
+   Portal          (90)
+   Jack-O-Lantern  (91)
+   Watch           (347)
+   Gold Dust       (348)
+   Raw Fish        (349)
+   Cooked Fish     (350)
+ - Added kits, which add a range of items to your inventory at once
+   (currently: 'Diamond Miner' and 'Diamond Fighter'). See the `kit`
+   command for a list of available kits, `kit <name>` to add a kit to
+   your inventory.
+ - Moving the player to the spawn point now takes in account the
+   dimension.  (You cannot move the spawn point between dimensions)
+ - Bookmarking places and warping to them is now possible between
+   dimensions.
+ - The `position` command now shows the dimension the player is in.
+ - Disabled the 'winter' command. Snow no longer exist after the
+   Halloween upgrade.
+ - Added an inventory tracker in case of untimely failure to continue
+   living. This is mostly a workaround for the bug in the Halloween
+   update that causes you to lose your inventory. It's kind of iffy
+   at the moment, please read the `help trackinv` help!
+
+v0.3 (29 Oct 2010)
+ - Fixed argument problems in the load, give and bookmark commands
+   (reported by yobbobandana and Lillefix)
+
+v0.2 (29 Oct 2010)
+ - Fixed running the editor from other directories (reported by
+   CATSCEO2)
+
+v0.1  (29 Oct 2010)
+ - Initial release
+

@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.3
+MCPlayerEdit  v0.4
 
 About
 -----
@@ -9,10 +9,11 @@ MCPlayerEdit is a Minecraft player- and inventory editor.
 Features include:
 
 - Modifying the inventory.
+- Adding kits (collections of items) to the inventory.
 - Showing and moving the player and spawn point coordinates.
 - Setting the in-game time of day.
-- Bookmark locations and warp back to them.
-- Turn on/off Winter mode in the map.
+- Bookmark locations and warp back to them (works inter-dimensional).
+- Track your inventory in case of death.
 - Commandline history
 - Commandline tab-completion (only on GNU/Linux for now)
 
@@ -31,6 +32,7 @@ Requirements
 ------------
 
 * Python 2.6+
+* readline (libreadline) for tab-completion support.
 
 Compatibly
 -----------
@@ -61,6 +63,20 @@ Windows (XP):
     - Unpack mcplayeredit-0.1.tar.gz with something like 7zip.
     - Navigate to the mcplayeredit folder
     - Double click the 'mcplayeredit.py' file.
+
+MacOS X:
+
+    - ?
+
+
+Make sure you are not playing the World in Minecraft before loading the level
+in MCPlayerEdit, or your chances will not take effect. You can modify a world
+with Minecraft closed, waiting on the main screen or when playing another
+World.
+
+You do not have to close MCPlayerEdit after editing a world, but if you have
+played the world in Minecraft, please issue a `reload` before making any
+changes.
 
 
 Some usage examples:
@@ -144,3 +160,29 @@ Credits:
     LadyCygna    (testing, suggestions)
     yobbobandana (bugfix)
 	Lillefix     (documentation fix)
+
+
+Development
+-----------
+
+Send bugs, feature requests, patches and beer to:
+
+  ferry.boender AT gmail.com
+
+Or:
+
+  ferry.boender AT electricmonk.nl
+
+Subversion repository is here:
+
+  https://svn.electricmonk.nl/svn/mcplayeredit/trunk/
+  
+Please provide patches in Unified Diff format:
+
+  diff -Naur OLDFILE NEWFILE > mcplayeredit-DESCRIPTION.patch
+
+In case the patch gets accepted, I will credit you in the revision logs,
+HISTORY.txt and README.txt with the name from your email (I will not include
+the email address). If you do not want this, or want to be credited under
+another name, please let me know!
+

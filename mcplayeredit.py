@@ -2,11 +2,14 @@
 
 #
 # Todo:
-# - MacOSX windows support.
+# - MCPlayerEditError errno's are not correct.
+# - MacOSX windows support (tab completion)
+# - give/kit will put items in armor slots even if they're not supposed to go there.
+# - Watch level.dat for changes?
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 3)
+__VERSION__ = (0, 4)
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -15,6 +18,7 @@ if sys.version_info[:2] < (2, 6):
 import os
 import shutil
 import struct
+import time
 basepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])))
 sys.path.insert(0, os.path.join(basepath, 'lib'))
 import icmd
@@ -109,6 +113,12 @@ items = {
 	83   : 'Reed',
 	84   : 'Jukebox',
 	85   : 'Fence',
+	86   : 'Pumpkin',
+	87   : 'Bloodstone',
+	88   : 'Slow Sand',
+	89   : 'Lightstone',
+	90   : 'Portal',
+	91   : 'Jack-O-Lantern',
 	256  : 'Iron Spade',
 	257  : 'Iron Pickaxe',
 	258  : 'Iron Axe',
@@ -200,6 +210,10 @@ items = {
 	344  : 'Egg',
 	345  : 'Compass',
 	346  : 'Fishing Rod',
+	347  : 'Watch',
+	348  : 'Gold Dust',
+	349  : 'Raw Fish',
+	350  : 'Cooked Fish',
 	2256 : 'Gold Record',
 	2257 : 'Green Record',
 }
@@ -208,6 +222,16 @@ invmap = \
 	[(x, 'quick') for x in range(0,9)] + \
 	[(x, 'normal') for x in range(9, 36)] + \
 	[(x, 'armor') for x in range(100, 104)]
+
+kits = {
+	'Diamond Miner': ( (1, 279), (1, 278), (1, 277), (1, 293) ),
+	'Diamond Fighter': ( (1, 276), (1, 310), (1, 311), (1, 313), (1, 312) ),
+}
+
+dimensions = {
+	-1: 'Nether',
+	0: 'Normal',
+}
 
 class MCPlayerEditError(Exception):
 	pass
@@ -295,8 +319,17 @@ class MCPlayerEdit(icmd.ICmdBase):
 		try:
 			for line in file(self.filename + '.bookmarks'):
 				if line.strip():
-					name, x, y, z = line.rsplit(' ', 3)
-					self.bookmarks[name] = (float(x), float(y), float(z))
+					# Check for pre-halloween update format
+					lastfield = line.split(' ')[-1]
+					if not '.' in lastfield:
+						# New format
+						name, x, y, z, dimension = line.strip().rsplit(' ', 4)
+					else:
+						# Old format
+						dimension = 0
+						name, x, y, z = line.strip().rsplit(' ', 3)
+
+					self.bookmarks[name] = (float(x), float(y), float(z), int(dimension))
 		except IOError:
 			pass
 
@@ -322,8 +355,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 			f = file(self.filename + '.bookmarks', 'w')
 			for bookmark in self.bookmarks.items():
 				name = bookmark[0]
-				x, y, z = bookmark[1]
-				f.write('%s %f %f %f\n' % (name, x, y, z))
+				x, y, z, dimension = bookmark[1]
+				f.write('%s %f %f %f %i\n' % (name, x, y, z, dimension))
 			f.close()
 		except IOError, e:
 			raise MCPlayerEditError(5, "Couldn't save bookmarks: %s" % (e.args[1]))
@@ -405,25 +438,83 @@ class MCPlayerEdit(icmd.ICmdBase):
 				if i[1].lower() == item.lower():
 					itemid = i[0]
 					break
-		if not itemid:
-			raise MCPlayerEditError(2, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (itemid))
+		if not itemid or itemid not in items:
+			raise MCPlayerEditError(2, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
 
-		inventory = self._getinventory()
-		for slot in invmap:
-			if not inventory[slot[0]]:
-				# Found an empty slot. 
-				i = nbt.TAG_Compound()
-				i['id'] = nbt.TAG_Short(itemid)
-				i['Damage'] = nbt.TAG_Short(0)
-				i['Count'] = nbt.TAG_Byte(count)
-				i['Slot'] = nbt.TAG_Byte(slot[0])
-				self.level['Data']['Player']['Inventory'].append(i)
-				self._output("Added %i x %s in slot %i" % (count, items[itemid], slot[0]))
-				break
-		else:
-			raise MCPlayerEditError(2, "No empy slots found.")
+		assignedslots = self._invadd([(count, itemid)])
+		self._output("Added %i x %s in slot %i" % (count, items[itemid], assignedslots[0]))
 
 		self.modified = True
+
+	def _invadd(self, items):
+		"""
+		Add ITEMS to the users inventory. ITEMS is a list where each member is
+		a list of two values: (count, itemid). Raises MCPlayerEditError if not
+		enough slots are available. Returns a list of slots in which the items
+		were added.
+		"""
+		inventory = self._getinventory()
+
+		# Check available slots
+		cnt = 0
+		for slot in invmap:
+			if not inventory[slot[0]]:
+				cnt += 1
+		if cnt < len(items):
+			raise MCPlayerEditError(2, "Not enough empty slots found. %i needed" % (len(items)))
+
+		i = 0
+		slots = [] # int ids of slots where items where assigned
+		for slot in invmap:
+			item = items[i]
+			if not inventory[slot[0]]:
+				# Found an empty slot. Add the next item 
+				newitem = nbt.TAG_Compound()
+				newitem['id'] = nbt.TAG_Short(item[1])
+				newitem['Damage'] = nbt.TAG_Short(0)
+				newitem['Count'] = nbt.TAG_Byte(item[0])
+				newitem['Slot'] = nbt.TAG_Byte(slot[0])
+				self.level['Data']['Player']['Inventory'].append(newitem)
+				slots.append(slot[0])
+				i += 1
+			if i == len(items):
+				break
+		return(slots)
+
+	def kit(self, kit = None, *args):
+		"""
+		Add a collection of items to the user's inventory
+		The kit command adds a whole kit of items to the user's inventory. The
+		inventory must have enough empty slots for all the items.
+
+		Examples:
+		> kit Diamond Miner
+		Added 'Diamond Miner' kit to inventory.
+		"""
+		if not kit:
+			sys.stdout.write("The following kits are available:\n")
+			for name, contents in kits.items():
+				sys.stdout.write("  %s:\n" % (name))
+				print '    %s' % (', '.join(['%i x %s' % (c[0], items[c[1]]) for c in contents]))
+		else:
+			self._checkloaded()
+
+			if args:
+				kit = '%s %s' % (kit, ' '.join(args))
+
+			# Find out which kit the user is trying to add
+			kitkey = None
+			for k in kits.keys():
+				if k.lower() == kit.lower():
+					kitkey = k
+			if not kitkey:
+				raise MCPlayerEditError(2, 'No such kit name. Use the `kit` command with no parameters to list the available kits')
+
+			kititems = kits[kitkey]
+			self._invadd(kititems)
+			self._output("Added '%s' kit to inventory." % (kitkey))
+
+			self.modified = True
 
 	def items(self, search = None):
 		"""
@@ -434,14 +525,14 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		Examples:
 		> items diamond
-		  264: Diamond
-		  279: Diamond Axe
-		   57: Diamond Block
-		  313: Diamond Boots
-		  ...
+		264: Diamond
+		279: Diamond Axe
+		57: Diamond Block
+		313: Diamond Boots
+		...
 		> items ingot
-		  266: Gold Ingot
-		  265: Iron Ingot
+		266: Gold Ingot
+		265: Iron Ingot
 		"""
 		sitems = [(item[1], item[0]) for item in items.items()]
 		sitems.sort()
@@ -505,11 +596,13 @@ class MCPlayerEdit(icmd.ICmdBase):
 		Z is smaller than 0 for East, larger than 0 for West.
 		"""
 		self._checkloaded()
+		print self.level['Data']
 		print "Spawn position : X, Y, Z: %i, %i, %i" % (
 			self.level['Data']['SpawnX'].value,
 			self.level['Data']['SpawnY'].value,
 			self.level['Data']['SpawnZ'].value)
-		print "Player position: X, Y, Z: %f, %f, %f" % (
+		print "Player position: Dimension, X, Y, Z: %s, %f, %f, %f" % (
+			dimensions[self.level['Data']['Player']['Dimension'].value],
 			self.level['Data']['Player']['Pos'][0].value,
 			self.level['Data']['Player']['Pos'][1].value,
 			self.level['Data']['Player']['Pos'][2].value)
@@ -518,7 +611,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		Move player or spawnpoint
 		Move the SOURCE ('player' or 'spawn') to the other position ('spawn' or
-		'player')
+		'player'). Spawnpoints can not be moved to other dimensions.
 
 		Examples:
 
@@ -530,11 +623,15 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 		if source.lower() == 'spawn':
+			dimension = self.level['Data']['Player']['Dimension'].value
+			if dimension != 0:
+				raise MCPlayerEditError(2, 'Cannot set spawn point in the %s dimension' % (dimensions[dimension]))
 			self.level['Data']['SpawnX'].value = int(self.level['Data']['Player']['Pos'][0].value)
 			self.level['Data']['SpawnY'].value = int(self.level['Data']['Player']['Pos'][1].value - 3)
 			self.level['Data']['SpawnZ'].value = int(self.level['Data']['Player']['Pos'][2].value)
 			self._output("Moved spawnpoint to current player position")
 		elif source.lower() == 'player':
+			self.level['Data']['Player']['Dimension'].value = 0
 			self.level['Data']['Player']['Pos'][0].value = self.level['Data']['SpawnX'].value + 0.5
 			self.level['Data']['Player']['Pos'][1].value = self.level['Data']['SpawnY'].value + 3.620000004768372
 			self.level['Data']['Player']['Pos'][2].value = self.level['Data']['SpawnZ'].value + 0.5
@@ -561,29 +658,33 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self.level['Data']['Time'].value = timemap[time]
 		self.modified = True
 
-	def winter(self, onoff=None):
-		"""
-		Display/change winter mode
-		Display or change the map to summer/winter mode. Winter mode will have
-		snow. ONOFF can be either 'on' or 'off'. If obmitted, displays the
-		current setting.
-		"""
-		self._checkloaded()
-		if not onoff:
-			print "Winter mode: %s" % (('off', 'on')[self.level['Data']['SnowCovered'].value])
-		elif onoff.lower() == 'off':
-			self.level['Data']['SnowCovered'].value = 0
-			self.modified = True
-		elif onoff.lower() == 'on':
-			self.level['Data']['SnowCovered'].value = 1
-			self.modified = True
+	#
+	# Winter mode is no longer available after the Halloween update. :(
+	#
+	#def winter(self, onoff=None):
+	#	"""
+	#	Display/change winter mode
+	#	Display or change the map to summer/winter mode. Winter mode will have
+	#	snow. ONOFF can be either 'on' or 'off'. If obmitted, displays the
+	#	current setting.
+	#	"""
+	#	self._checkloaded()
+	#	if not onoff:
+	#		print "Winter mode: %s" % (('off', 'on')[self.level['Data']['SnowCovered'].value])
+	#	elif onoff.lower() == 'off':
+	#		self.level['Data']['SnowCovered'].value = 0
+	#		self.modified = True
+	#	elif onoff.lower() == 'on':
+	#		self.level['Data']['SnowCovered'].value = 1
+	#		self.modified = True
 
 	def bookmark(self, bookmark, *args):
 		"""
 		Create bookmark for later warping
-		Creates a bookmark named BOOKMARK at the current player's position. If
-		a bookmark with that name already exists, it is overwritten. The player
-		can later warp to that bookmark using the `warp` command.
+		Creates a bookmark named BOOKMARK at the current player's position and
+		dimension. If a bookmark with that name already exists, it is
+		overwritten. The player can later warp to that bookmark using the
+		`warp` command.
 		"""
 		self._checkloaded()
 
@@ -593,7 +694,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self.bookmarks[bookmark] = (
 			self.level['Data']['Player']['Pos'][0].value,
 			self.level['Data']['Player']['Pos'][1].value,
-			self.level['Data']['Player']['Pos'][2].value
+			self.level['Data']['Player']['Pos'][2].value,
+			self.level['Data']['Player']['Dimension'].value,
 		)
 		self._output("Bookmark '%s' created." % (bookmark))
 
@@ -601,7 +703,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		Move player to bookmarked point
 		Moves the player to a bookmarked point set with the `bookmark` command.
-		If no BOOKMARK is given, list the current bookmarks.
+		If no BOOKMARK is given, list the current bookmarks. You CAN warp
+		between dimensions.
 		"""
 		self._checkloaded()
 		if not bookmark:
@@ -609,8 +712,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 			print "The following bookmarks have been set:"
 			for bookmark in self.bookmarks.items():
 				name = bookmark[0]
-				x, y, z = bookmark[1]
-				print "  %-30s: %8f %8f %8f" % (name, x, y, z)
+				x, y, z, dimension = bookmark[1]
+				print "  %-20s: %8f %8f %8f (%s Dimension)" % (name, x, y, z, dimensions[dimension])
 		else:
 			if args:
 				bookmark = '%s %s' % (bookmark, ' '.join(args))
@@ -622,11 +725,51 @@ class MCPlayerEdit(icmd.ICmdBase):
 				raise MCPlayerEditError(2, "No such bookmark.")
 
 			# Warp to bookmark
-			x, y, z = self.bookmarks[k]
+			x, y, z, dimension = self.bookmarks[k]
+			self.level['Data']['Player']['Dimension'].value = dimension
 			self.level['Data']['Player']['Pos'][0].value = x
 			self.level['Data']['Player']['Pos'][1].value = int(y) + 0.620000004768372
 			self.level['Data']['Player']['Pos'][2].value = z
 			self._output('Warped player position to %s' % (k))
+
+	def trackinv(self):
+		"""
+		Restore inventory after dying
+		This command will track your inventory while you are playing. In the
+		event of an untimely failure to continue living, it will save the
+		inventory you had when you died. If you respawn and then quit playing
+		the level, you can press Ctrl-C in MCPlayerEdit and choose to restore
+		your inventory.
+		"""
+		self._checkloaded()
+		self._output("Tracking inventory. Press Ctrl-c to stop.")
+
+		playerdied = False
+		inventory = []
+		try:
+			while True:
+				time.sleep(1)
+				level = nbt.load(self.filename)
+
+				# Check if the player died. If so, save the inventory
+				if not playerdied and level['Data']['Player']['Health'].value == 0:
+					playerdied = True
+					inventory[:] = [] # Clear previous inventory
+					for slot in level['Data']['Player']['Inventory']:
+						inventory.append((slot['Count'].value, slot['id'].value))
+					print "Player died"
+		except KeyboardInterrupt:
+			if playerdied:
+				print "\nOh dear, it seems you have died. If you have respawned and "
+				print "quit to the main title, you can restore your inventory now."
+				reply = raw_input('Would you like to restore your inventory? [Y/n]')
+				if not reply.lower().startswith('n'):
+					self.reload()
+					self.clear('all')
+					self._invadd(inventory)
+					self.save()
+					print "Inventory restored"
+		self._output("\nNo longer tracking inventory.")
 
 	def quit(self):
 		"""
@@ -652,6 +795,8 @@ class MCPlayerCmd(icmd.ICmd):
 		line = icmd.readline.get_line_buffer()
 		if line.startswith('give'):
 			w = [item for item in items.values() if item.lower().startswith(text.lower())]
+		elif line.startswith('kit'):
+			w = [key for key in kits.keys() if key.lower().startswith(text.lower())]
 		elif line.startswith('list'):
 			w = [l for l in ('all', 'quick', 'normal', 'armor') if l.startswith(text)]
 		elif line.startswith('move'):

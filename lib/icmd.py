@@ -3,6 +3,9 @@
 #
 # TODO:
 # - Currently can't specify the history file.
+# -  File "/home/todsah/Development/mcplayeredit/lib/icmd.py", line 97, in _help_getspecifics
+#    help_short, help_desc = doc[0], '\n  '.join(doc[1:]) (EMPTY DOC STRING)
+
 #
 
 """
