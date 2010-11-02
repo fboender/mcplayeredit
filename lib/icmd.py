@@ -75,7 +75,9 @@ class ICmdBase(object):
 				help = self._help_getspecifics(command)
 				self._output("%s: %s" % (command, help[0]))
 				self._output("Usage: %s\n" % (help[2]))
-				self._output("  %s\n" % (help[1]))
+				for line in help[1].splitlines():
+					self._output("  %s" % (line))
+				self._output('')
 		else:
 			# Display all available commands
 			self._output(self.helptext_prefix)
@@ -93,25 +95,28 @@ class ICmdBase(object):
 		# Get short and full descriptions from the function's docstring.
 		func = getattr(self, command)
 		if func.__doc__:
-			doc = [l.strip() for l in func.__doc__.strip().splitlines()]
-			if len(doc) == 1:
-				help_short = doc[0]
-			else:
-				help_short, help_desc = doc[0], '\n  '.join(doc[1:])
+			for line in func.__doc__.strip().splitlines():
+				if line.lower().strip().startswith('usage:'):
+					help_usage = line[8:].strip()
+				elif not help_short:
+					help_short = line.strip()
+				else:
+					help_desc += "%s\n" % (line.strip())
 
 		# Get usage from the parameters
-		args = inspect.getargspec(func)
+		if not help_usage:
+			args = inspect.getargspec(func)
 
-		parcnt_max = len(args.args) - 1
-		parcnt_min = len(args.args) - 1 - len(args.defaults or '')
-		help_usage = command
-		for i in range(1, len(args.args)):
-			if i <= parcnt_min:
-				help_usage += " <%s>" % (args.args[i])
-			else:
-				help_usage += " [%s]" % (args.args[i])
+			parcnt_max = len(args.args) - 1
+			parcnt_min = len(args.args) - 1 - len(args.defaults or '')
+			help_usage = command
+			for i in range(1, len(args.args)):
+				if i <= parcnt_min:
+					help_usage += " <%s>" % (args.args[i])
+				else:
+					help_usage += " [%s]" % (args.args[i])
 
-		return([help_short, help_desc, help_usage])
+		return([help_short.strip(), help_desc.strip(), help_usage.strip()])
 
 	def quit(self):
 		"""
@@ -179,6 +184,7 @@ class ICmd(object):
 		logging.info("Dispatching %s %s" % (cmd, str(params)))
 		try:
 			func = getattr(self.instclass, cmd)
+			getattr(func, '__call__') # Test callability
 		except AttributeError, e:
 			raise ICmdError(1, "No such command: '%s'. Type 'help [command]' for help." % (cmd))
 

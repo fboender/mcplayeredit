@@ -396,13 +396,14 @@ class MCPlayerEdit(icmd.ICmdBase):
 				else:
 					print
 
-	def give(self, count, item, *args):
+	def give(self, count, *args):
 		"""
 		Add items to the players inventory
+		Usage: give [count] <item>
 		Tries to add COUNT times ITEM to the player inventory. COUNT must be in
-		the range 1-64. ITEM may be an item ID (see the `items` command) or the
-		name of an item. Fails if there are no empty slots in the players
-		inventory.
+		the range 1-64. If no count is given, gives one item. ITEM may be an
+		item ID (see the `items` command) or the name of an item. Fails if
+		there are no empty slots in the players inventory.
 
 		You CAN stack unstackable items (64 x Diamond Pickaxe), and it will
 		work, but it might corrupt your game. NO GAME-LOGIC IS CHECKED WHEN
@@ -418,14 +419,17 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		if args:
-			item = '%s %s' % (item, ' '.join(args))
+		item = ' '.join(args)
+		if not item:
+			item = count
+			count = 1
 
 		# Validate some input
 		try:
 			count = int(count)
 		except ValueError:
-			raise MCPlayerEditError(2, 'Invalid count number. Must be in range 1 - 64')
+			item = ' '.join((count,) + args)
+			count = 1
 		if count < 1 or count > 64:
 			raise MCPlayerEditError(2, 'Invalid count number. Must be in range 1 - 64')
 
