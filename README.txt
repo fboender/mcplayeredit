@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.4
+MCPlayerEdit  v0.5
 
 About
 -----
@@ -153,14 +153,13 @@ Credits:
 
    CodeWarrior0 for the excellent NBT Python lib (I hacked it a bit)
 
- Testing
+ Contributions / Testing
 
-    maramonster  (testing, suggestions)
     Camel        (suggestions)
     LadyCygna    (testing, suggestions)
-    yobbobandana (bugfix)
 	Lillefix     (documentation fix)
-
+    Maramonster  (testing, suggestions)
+    Yobbobandana (bugfixes, patches)
 
 Development
 -----------

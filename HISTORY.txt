@@ -1,3 +1,8 @@
+v0.5 (02 Nov 2010)
+ - 'count' argument is now optional (default: 1) in the 'give' command. (Patch
+   by yobbobandana).
+ - Bugfixes. (Patch by yobbobandana).
+
 v0.4 (31 Oct 2010)
  - New items added:
    Pumpkin         (86)
