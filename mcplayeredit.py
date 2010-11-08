@@ -600,7 +600,6 @@ class MCPlayerEdit(icmd.ICmdBase):
 		Z is smaller than 0 for East, larger than 0 for West.
 		"""
 		self._checkloaded()
-		print self.level['Data']
 		print "Spawn position : X, Y, Z: %i, %i, %i" % (
 			self.level['Data']['SpawnX'].value,
 			self.level['Data']['SpawnY'].value,
