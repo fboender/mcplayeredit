@@ -144,7 +144,7 @@ class ICmd(object):
 	ICmdBase class, provide an interactive commandline to control that class.
 	"""
 
-	def __init__(self, rootclass, prompt='> ', welcometext='Type \'help\' for help.', helptext_prefix='The following commands are available:\n', helptext_suffix='\n(type \'help <command>\' for details)\n', batch=False):
+	def __init__(self, rootclass, prompt='> ', histfile=os.path.join(os.environ.get('HOME', ''), '.icmd_hist'), welcometext='Type \'help\' for help.', helptext_prefix='The following commands are available:\n', helptext_suffix='\n(type \'help <command>\' for details)\n', batch=False):
 		"""
 		Create a new interactive commandline interface to rootclass by creating
 		an instance of rootclass (your class must derive from ICmdBase). Use
@@ -158,12 +158,12 @@ class ICmd(object):
 		self.prompt = prompt
 		self.welcometext = welcometext
 		self.batch = batch
+		self.histfile = histfile
 		self.instclass = self.rootclass(helptext_prefix, helptext_suffix, self.batch)
 
-		# Initialize readline, but only if we were able to load the module.
+		# Initialize readline, but only if we we're able to load the module.
 		if 'readline' in sys.modules:
 			logging.info("Using readline")
-			self.histfile = os.path.join(os.environ["HOME"], ".mcinvedit")
 			try:
 				readline.read_history_file(self.histfile)
 			except IOError:
