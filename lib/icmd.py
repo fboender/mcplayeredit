@@ -44,7 +44,17 @@ import sys
 import os
 import inspect
 import logging
+
+# Try to load the clusterfuck that is readline. THANKS GNU!
 try:
+	# See if we can load PyReadline (an almost pure Python implementation of
+	# readline for windows)
+	import pyreadline as readline
+except ImportError:
+	pass
+
+try:
+	# Lets try the Unix readline version.
 	import readline
 except ImportError:
 	pass
@@ -162,7 +172,7 @@ class ICmd(object):
 		self.instclass = self.rootclass(helptext_prefix, helptext_suffix, self.batch)
 
 		# Initialize readline, but only if we we're able to load the module.
-		if 'readline' in sys.modules:
+		if 'readline' in sys.modules or 'pyreadline' in sys.modules:
 			logging.info("Using readline")
 			try:
 				readline.read_history_file(self.histfile)
@@ -256,7 +266,7 @@ class ICmd(object):
 				else:
 					self.run_once()
 		except (SystemExit, KeyboardInterrupt):
-			if 'readline' in sys.modules:
+			if 'readline' in sys.modules or 'pyreadline' in sys.modules:
 				logging.info("Writing readline command history")
 				readline.write_history_file(self.histfile)
 

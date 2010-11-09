@@ -25,6 +25,14 @@ import icmd
 import nbt
 sys.path.pop(0)
 
+welcometext = """
+%s v%i.%i by %s
+
+Use 'load <worldnr>' or 'load <path_to_level.dat>' to load a level.
+Type 'help' for a list of commands, 'help <command>' for detailed help.
+'items' gives you a list of all available items.
+""" % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
+
 items = {
 	0    : 'Air',
 	1    : 'Stone',
@@ -546,7 +554,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 	def clear(self, slot):
 		"""
-		Clear a slot in the inventory
+		Clear all/a single slot(s) in the inventory
 		Clear a slot in the inventory. SLOT is a slot id (see the `list`
 		command). You may also specify 'all' as the slot ID to clear the entire
 		inventory.
@@ -786,8 +794,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 	exit = quit
 
 class MCPlayerCmd(icmd.ICmd):
-	def __init__(self, rootclass, prompt='> ', welcometext='Type \'help\' for help.', helptext_prefix='The following commands are available:\n', helptext_suffix='\n(type \'help <command>\' for details)\n', batch=False):
-		exit = super(MCPlayerCmd, self).__init__(rootclass, prompt=prompt, welcometext=welcometext)
+	def __init__(self, rootclass, prompt='> ', histfile=os.path.join(os.environ.get('HOME', ''), '.icmd_hist'), welcometext='Type \'help\' for help.', helptext_prefix='The following commands are available:\n', helptext_suffix='\n(type \'help <command>\' for details)\n', batch=False):
+		exit = super(MCPlayerCmd, self).__init__(rootclass, prompt=prompt, histfile=histfile, welcometext=welcometext)
 		self.rootclass.icmd = self
 
 	def _completer(self, text, state):
@@ -825,13 +833,24 @@ class MCPlayerCmd(icmd.ICmd):
 			if exit:
 				break
 
-welcometext = """
-%s v%i.%i by %s
+# Create preferences directory and deduce some paths.
+confpath = os.path.join(os.environ.get('HOME', ''), '.mcplayeredit')
+oldconfpath = os.path.join(os.environ.get('HOME', ''), '.mcinvedit')
+if sys.platform.startswith('darwin'):
+	pass # FIXME
+	#conffile = os.path.join(os.environ.get('HOME', ''), '.mcplayeredit')
+	#oldconfpath = os.path.join(os.environ.get('APPDATA', ''), '.mcinvedit')
+	#self.filename = '%s/Library/Application Support/minecraft/saves/World%i/level.dat' % (os.environ['HOME'], self.world)
+elif sys.platform.startswith('win'):
+	confpath = os.path.join(os.environ.get('APPDATA', ''), 'MCPlayerEdit')
+	oldconfpath = os.path.join(os.environ.get('HOME', ''), '.mcinvedit')
+confpath_hist = os.path.join(confpath, 'history')
 
-Use 'load <worldnr>' or 'load <path_to_level.dat>' to load a level.
-Type 'help' for a list of commands, 'help <command>' for detailed help.
-'items' gives you a list of all available items.
-""" % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
+if not os.path.exists(confpath):
+	os.mkdir(confpath)
+	# Check for old-style .mcinvedit file
+	if os.path.exists(oldconfpath):
+		os.rename(oldconfpath, confpath_hist)
 
-mcplayeredit = MCPlayerCmd(MCPlayerEdit, welcometext=welcometext)
+mcplayeredit = MCPlayerCmd(MCPlayerEdit, histfile=confpath_hist, welcometext=welcometext)
 mcplayeredit.run()

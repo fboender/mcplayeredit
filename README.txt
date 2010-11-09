@@ -15,7 +15,7 @@ Features include:
 - Bookmark locations and warp back to them (works inter-dimensional).
 - Track your inventory in case of death.
 - Commandline history
-- Commandline tab-completion (only on GNU/Linux for now)
+- Commandline tab-completion (only on GNU/Linux, WinXP for now)
 
 !! WARNING !!
 

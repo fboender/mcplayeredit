@@ -1,3 +1,7 @@
+v0.6 (09 Nov 2010)
+ - Improved commandline history and tab-completion on Windows.
+ - Bugfix in the `position` command.
+
 v0.5 (02 Nov 2010)
  - 'count' argument is now optional (default: 1) in the 'give' command. (Patch
    by yobbobandana).
