@@ -41,24 +41,35 @@ Developed for and on:
 
     Ubuntu 10.04 / Python 2.6.5
 
+Confirmed to be working on:
+
+	- Ubuntu 10.04
+	- Windows XP (Limited tab-completion functionality)
+	- Windows 7 (Limited tab-completion functionality)
+	- Mac OS X 10.5.5
+
 Should work on:
 
     - Every Unix-like OS
     - MacOSX
-    - Windows XP
-    - Windows 7 (No loading of worlds by world number)
+	- Windows Vista
 
 Usage
 -----
 
-GNU/Linux, Unix-compatible
+GNU/Linux, Unix-compatible:
+
+	Unpack the tarball
 
     $ tar -vxzf mcplayeredit-0.1.tar.gz
+
+	Start MCPlayerEdit
+
     $ cd mcplayeredit
     $ python ./mcplayeredit
     > load <worldnr>
 
-Windows (XP):
+Windows (XP, 7):
 
     - Unpack mcplayeredit-0.1.tar.gz with something like 7zip.
     - Navigate to the mcplayeredit folder
@@ -66,11 +77,18 @@ Windows (XP):
 
 MacOS X:
 
-    - ?
+	Using Finder
 
+    - Download mcplayeredit-0.5.tar.gz 
+	- Open the containing folder
+	- Double-click the .tar.gz file to extract it.
+	- Open the extracted mcplayeredit-0.5 folder
+	- Double-click the 'mcplayeredit.py' file. This will most likely open it in
+	  the Python IDLE editor
+	- Press F5 to run the Python script.
 
 Make sure you are not playing the World in Minecraft before loading the level
-in MCPlayerEdit, or your chances will not take effect. You can modify a world
+in MCPlayerEdit, or your changes will not take effect. You can modify a world
 with Minecraft closed, waiting on the main screen or when playing another
 World.
 
@@ -78,10 +96,10 @@ You do not have to close MCPlayerEdit after editing a world, but if you have
 played the world in Minecraft, please issue a `reload` before making any
 changes.
 
-
 Some usage examples:
 
-    (You can use tab completion if your on Linux)
+	(You can use tab completion if your on Linux. Tab completion also works on
+	Win XP/7, but is not as full-featured as on *Nix systems)
 
     > load 1
     Loaded.
