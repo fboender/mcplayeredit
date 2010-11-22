@@ -11,6 +11,7 @@
 #   * Give coloured cloth.
 # - Watch level.dat for changes?
 # - Detect lock? (Is this even possible?)
+# - Confirm method.
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
@@ -566,9 +567,9 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		# Validate some input
 		inventory = self.level['Data']['Player']['Inventory']
 
+		# Validate some input
 		if slot != 'all':
 			# Clear a specific slot number.
 			try:
