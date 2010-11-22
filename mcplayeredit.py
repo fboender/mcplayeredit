@@ -2,7 +2,6 @@
 
 #
 # Todo:
-# - MCPlayerEditError errno's are not correct.
 # - MacOSX windows support (tab completion)
 # - give/kit will put items in armor slots even if they're not supposed to go there.
 # - Watch level.dat for changes?
@@ -304,7 +303,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			elif sys.platform.startswith('linux'):
 				self.filename = '%s/.minecraft/saves/World%i/level.dat' % (os.environ['HOME'], self.world)
 			else:
-				raise MCPlayerEditError(3, "Unknown platform. Can't load by world number. Please specify full path")
+				raise MCPlayerEditError(2, "Unknown platform. Can't load by world number. Please specify full path")
 			if hasattr(self, 'world'):
 				self.icmd.prompt = 'World %i> ' % (self.world)
 		except ValueError:
@@ -315,7 +314,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			self.level = nbt.load(self.filename)
 		except IOError, e:
 			if e.errno == 2:
-				raise MCPlayerEditError(4, "Invalid filename or worldnumber. Couldn't open '%s'." % (self.filename))
+				raise MCPlayerEditError(3, "Invalid filename or worldnumber. Couldn't open '%s'." % (self.filename))
 				del self.filename
 				return(False)
 			else:
@@ -367,7 +366,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				f.write('%s %f %f %f %i\n' % (name, x, y, z, dimension))
 			f.close()
 		except IOError, e:
-			raise MCPlayerEditError(5, "Couldn't save bookmarks: %s" % (e.args[1]))
+			raise MCPlayerEditError(4, "Couldn't save bookmarks: %s" % (e.args[1]))
 
 		self.modified = False
 		self._output("Saved. Backup created (%s)" % (self.filename + '.bak'))
@@ -439,7 +438,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			item = ' '.join((count,) + args)
 			count = 1
 		if count < 1 or count > 64:
-			raise MCPlayerEditError(2, 'Invalid count number. Must be in range 1 - 64')
+			raise MCPlayerEditError(5, 'Invalid count number. Must be in range 1 - 64')
 
 		# Find out which item the user is trying to add
 		itemid = None
@@ -451,7 +450,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 					itemid = i[0]
 					break
 		if not itemid or itemid not in items:
-			raise MCPlayerEditError(2, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
+			raise MCPlayerEditError(6, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
 
 		assignedslots = self._invadd([(count, itemid)])
 		self._output("Added %i x %s in slot %i" % (count, items[itemid], assignedslots[0]))
@@ -473,7 +472,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			if not inventory[slot[0]]:
 				cnt += 1
 		if cnt < len(items):
-			raise MCPlayerEditError(2, "Not enough empty slots found. %i needed" % (len(items)))
+			raise MCPlayerEditError(6, "Not enough empty slots found. %i needed" % (len(items)))
 
 		i = 0
 		slots = [] # int ids of slots where items where assigned
@@ -520,7 +519,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				if k.lower() == kit.lower():
 					kitkey = k
 			if not kitkey:
-				raise MCPlayerEditError(2, 'No such kit name. Use the `kit` command with no parameters to list the available kits')
+				raise MCPlayerEditError(7, 'No such kit name. Use the `kit` command with no parameters to list the available kits')
 
 			kititems = kits[kitkey]
 			self._invadd(kititems)
@@ -569,9 +568,9 @@ class MCPlayerEdit(icmd.ICmdBase):
 			try:
 				slot = int(slot)
 			except ValueError:
-				raise MCPlayerEditError(2, "Invalid slot number")
+				raise MCPlayerEditError(8, "Invalid slot number")
 			if slot < 0 or slot > 103:
-				raise MCPlayerEditError(2, "Invalid slot number")
+				raise MCPlayerEditError(9, "Invalid slot number")
 
 			for i in range(0, len(inventory)):
 				if inventory[i]['Slot'].value == slot:
@@ -579,7 +578,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 					self._output("Cleared slot %i" % (slot))
 					break
 			else:
-				raise MCPlayerEditError(2, "Slot already empty")
+				raise MCPlayerEditError(10, "Slot already empty")
 		else:
 			# Clear entire inventory. NBT does not support slice assignment, so
 			# we need a while loop.
@@ -636,7 +635,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if source.lower() == 'spawn':
 			dimension = self.level['Data']['Player']['Dimension'].value
 			if dimension != 0:
-				raise MCPlayerEditError(2, 'Cannot set spawn point in the %s dimension' % (dimensions[dimension]))
+				raise MCPlayerEditError(11, 'Cannot set spawn point in the %s dimension' % (dimensions[dimension]))
 			self.level['Data']['SpawnX'].value = int(self.level['Data']['Player']['Pos'][0].value)
 			self.level['Data']['SpawnY'].value = int(self.level['Data']['Player']['Pos'][1].value - 3)
 			self.level['Data']['SpawnZ'].value = int(self.level['Data']['Player']['Pos'][2].value)
@@ -648,7 +647,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			self.level['Data']['Player']['Pos'][2].value = self.level['Data']['SpawnZ'].value + 0.5
 			self._output("Moved current player position to spawnpoint")
 		else:
-			raise MCPlayerEditError(2, "Unknown source")
+			raise MCPlayerEditError(12, "Unknown source")
 
 		self.modified = True
 
@@ -664,7 +663,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			'midnight': 18000,
 		}
 		if not time in timemap.keys():
-			raise MCPlayerEditError(2, 'Invalid time of day. Valid options: %s' % (', '.join(timemap.keys())))
+			raise MCPlayerEditError(13, 'Invalid time of day. Valid options: %s' % (', '.join(timemap.keys())))
 
 		self.level['Data']['Time'].value = timemap[time]
 		self.modified = True
@@ -733,7 +732,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				i = [b.lower() for b in self.bookmarks.keys()].index(bookmark.lower())
 				k = self.bookmarks.keys()[i]
 			except ValueError:
-				raise MCPlayerEditError(2, "No such bookmark.")
+				raise MCPlayerEditError(14, "No such bookmark.")
 
 			# Warp to bookmark
 			x, y, z, dimension = self.bookmarks[k]
