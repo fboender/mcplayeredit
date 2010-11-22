@@ -3,8 +3,14 @@
 #
 # Todo:
 # - MacOSX windows support (tab completion)
-# - give/kit will put items in armor slots even if they're not supposed to go there.
+# - give/kit will put items in armor slots even if they're not supposed to go
+#   there.
+# - Safe mode: Users can't do things using MCPlayerEdit which they can't do in the game:
+#   * Add more than 1 tool/etc in a slot.
+#   * Add non-armor in an armor slot.
+#   * Give coloured cloth.
 # - Watch level.dat for changes?
+# - Detect lock? (Is this even possible?)
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
