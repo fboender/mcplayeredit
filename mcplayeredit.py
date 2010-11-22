@@ -668,26 +668,6 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self.level['Data']['Time'].value = timemap[time]
 		self.modified = True
 
-	#
-	# Winter mode is no longer available after the Halloween update. :(
-	#
-	#def winter(self, onoff=None):
-	#	"""
-	#	Display/change winter mode
-	#	Display or change the map to summer/winter mode. Winter mode will have
-	#	snow. ONOFF can be either 'on' or 'off'. If obmitted, displays the
-	#	current setting.
-	#	"""
-	#	self._checkloaded()
-	#	if not onoff:
-	#		print "Winter mode: %s" % (('off', 'on')[self.level['Data']['SnowCovered'].value])
-	#	elif onoff.lower() == 'off':
-	#		self.level['Data']['SnowCovered'].value = 0
-	#		self.modified = True
-	#	elif onoff.lower() == 'on':
-	#		self.level['Data']['SnowCovered'].value = 1
-	#		self.modified = True
-
 	def bookmark(self, bookmark, *args):
 		"""
 		Create bookmark for later warping
