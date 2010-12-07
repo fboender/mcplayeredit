@@ -1,6 +1,10 @@
 v0.6 (09 Nov 2010)
  - Improved commandline history and tab-completion on Windows.
  - Bugfix in the `position` command.
+ - You can create new kits by using the 'kitsave' command. It will save your
+   current inventory as a kit.
+ - 'warpto' command added which lets you warp to a specific set of
+   coordinates. (Patch by Foone).
 
 v0.5 (02 Nov 2010)
  - 'count' argument is now optional (default: 1) in the 'give' command. (Patch

@@ -178,6 +178,7 @@ Credits:
 	Lillefix     (documentation fix)
     Maramonster  (testing, suggestions)
     Yobbobandana (bugfixes, patches)
+	Foone        (warpto command patch)
 
 Development
 -----------

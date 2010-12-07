@@ -770,6 +770,30 @@ class MCPlayerEdit(icmd.ICmdBase):
 			self.level['Data']['Player']['Pos'][2].value = z
 			self._output('Warped player position to %s' % (k))
 
+	def warpto(self, x, y, z, dimension='Normal'):
+		"""
+		Move player to specific coordinates.
+		Move the player to a specific set of coordinates. If no dimension is
+		given, defaults to the normal dimension. 'y' is the height. 
+		
+		CAREFUL: You can easily warp yourself into blocks, which will cause you
+		to die!
+		"""
+		self._checkloaded()
+
+		try:
+			dimension=[k for (k,v) in dimensions.items() if v.lower()==dimension.lower()][0]
+		except IndexError:
+			raise MCPlayerEditError(2, "No such dimension.")
+
+		x,y,z=(float(s.rstrip(',')) for s in (x,y,z))
+
+		self.level['Data']['Player']['Dimension'].value = dimension
+		self.level['Data']['Player']['Pos'][0].value = x
+		self.level['Data']['Player']['Pos'][1].value = float(int(y)) + 0.620000004768372
+		self.level['Data']['Player']['Pos'][2].value = z
+		self._output('Warped player position to %8f %8f %8f (%s Dimension)' % (x, y, z, dimensions[dimension]))
+
 	def trackinv(self):
 		"""
 		Restore inventory after dying
