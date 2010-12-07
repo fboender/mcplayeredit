@@ -2,13 +2,17 @@
 
 #
 # Todo:
+# - autocomplete needs work
+#   * Values with spaces are not quoted/escaped properly. 
+#   * Autocomplete on mac
+#   * completing 'kit' doesn't show 'kitsave'.
 # - MacOSX windows support (tab completion)
 # - give/kit will put items in armor slots even if they're not supposed to go
 #   there.
 # - Safe mode: Users can't do things using MCPlayerEdit which they can't do in the game:
 #   * Add more than 1 tool/etc in a slot.
 #   * Add non-armor in an armor slot.
-#   * Give coloured cloth.
+#   * Give coloured cloth and other invalid items.
 # - Watch level.dat for changes?
 # - Detect lock? (Is this even possible?)
 # - Confirm method.
@@ -237,20 +241,43 @@ invmap = \
 	[(x, 'normal') for x in range(9, 36)] + \
 	[(x, 'armor') for x in range(100, 104)]
 
-kits = {
-	'Diamond Miner': ( (1, 279), (1, 278), (1, 277), (1, 293) ),
-	'Diamond Fighter': ( (1, 276), (1, 310), (1, 311), (1, 313), (1, 312) ),
-}
-
 dimensions = {
 	-1: 'Nether',
 	0: 'Normal',
+}
+
+defaultkits = { # Only used if kits.dat doesn't exist.
+	'Diamond Miner': ( (1, 279), (1, 278), (1, 277), (1, 293) ),
+	'Diamond Fighter': ( (1, 276), (1, 310), (1, 311), (1, 313), (1, 312) ),
 }
 
 class MCPlayerEditError(Exception):
 	pass
 
 class MCPlayerEdit(icmd.ICmdBase):
+	def __init__(self, helptext_prefix = '', helptext_suffix = '', batch=False):
+		# Load kits
+		self.kitpath = os.path.join(confpath, 'kits.dat')
+		if not os.path.exists(self.kitpath):
+			self.kits = defaultkits
+			self._kit_save(self.kitpath)
+		else:
+			self.kits = self._kit_load(self.kitpath)
+
+		super(MCPlayerEdit, self).__init__(helptext_prefix = '', helptext_suffix = '', batch=False)
+
+	def _kit_load(self, path):
+		kits = {}
+		for line in file(path):
+			name, contents = line.split('\t', 1)
+			kits[name] = eval(contents, {'__builtins__': None})
+		return(kits)
+
+	def _kit_save(self, path):
+		f = file(path, 'w')
+		for name, contents in self.kits.items():
+			f.write('%s\t%s\n' % (name, contents))
+		f.close()
 
 	def _checkloaded(self):
 		"""
@@ -511,7 +538,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		if not kit:
 			sys.stdout.write("The following kits are available:\n")
-			for name, contents in kits.items():
+			for name, contents in self.kits.items():
 				sys.stdout.write("  %s:\n" % (name))
 				print '    %s' % (', '.join(['%i x %s' % (c[0], items[c[1]]) for c in contents]))
 		else:
@@ -522,17 +549,31 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 			# Find out which kit the user is trying to add
 			kitkey = None
-			for k in kits.keys():
+			for k in self.kits.keys():
 				if k.lower() == kit.lower():
 					kitkey = k
 			if not kitkey:
 				raise MCPlayerEditError(7, 'No such kit name. Use the `kit` command with no parameters to list the available kits')
 
-			kititems = kits[kitkey]
+			kititems = self.kits[kitkey]
 			self._invadd(kititems)
 			self._output("Added '%s' kit to inventory." % (kitkey))
 
 			self.modified = True
+
+	def kitsave(self, name):
+		"""
+		Save current inventory as kit
+		Save the current player inventory as a kit.
+		"""
+		self._checkloaded()
+
+		contents = []
+		for slot in self.level['Data']['Player']['Inventory']:
+			inv.append( (slot['Count'].value, slot['id'].value) )
+
+		self.kits[name] = contents
+		self._kit_save(self.kitpath)
 
 	def items(self, search = None):
 		"""
