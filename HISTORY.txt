@@ -5,6 +5,7 @@ v0.6 (09 Dec 2010)
    current inventory as a kit.
  - 'warpto' command added which lets you warp to a specific set of
    coordinates. (Patch by Foone).
+ - Added icon.
 
 v0.5 (02 Nov 2010)
  - 'count' argument is now optional (default: 1) in the 'give' command. (Patch
