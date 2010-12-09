@@ -19,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 5)
+__VERSION__ = (0, 6)
 
 import sys
 if sys.version_info[:2] < (2, 6):
