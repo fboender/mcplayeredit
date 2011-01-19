@@ -19,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 6)
+__VERSION__ = (0, 7)
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -33,6 +33,7 @@ basepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])))
 sys.path.insert(0, os.path.join(basepath, 'lib'))
 import icmd
 import nbt
+import sdb
 sys.path.pop(0)
 
 welcometext = """
@@ -43,198 +44,235 @@ Type 'help' for a list of commands, 'help <command>' for detailed help.
 'items' gives you a list of all available items.
 """ % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
 
-items = {
-	0    : 'Air',
-	1    : 'Stone',
-	2    : 'Grass',
-	3    : 'Dirt',
-	4    : 'Cobblestone',
-	5    : 'Wood',
-	6    : 'Sapling',
-	7    : 'Adminium',
-	8    : 'Water',
-	9    : 'Stationary water',
-	10   : 'Lava',
-	11   : 'Stationary lava',
-	12   : 'Sand',
-	13   : 'Gravel',
-	14   : 'Gold ore',
-	15   : 'Iron ore',
-	16   : 'Coal ore',
-	17   : 'Log',
-	18   : 'Leaves',
-	19   : 'Sponge',
-	20   : 'Glass',
-	21   : 'Red Cloth',
-	22   : 'Orange Cloth',
-	23   : 'Yellow Cloth',
-	24   : 'Lime Cloth',
-	25   : 'Green Cloth',
-	26   : 'Aqua green Cloth',
-	27   : 'Cyan Cloth',
-	28   : 'Blue Cloth',
-	29   : 'Purple Cloth',
-	30   : 'Indigo Cloth',
-	31   : 'Violet Cloth',
-	32   : 'Magenta Cloth',
-	33   : 'Pink Cloth',
-	34   : 'Black Cloth',
-	#35  : 'Gray Cloth / White Cloth',
-	35   : 'Wool',
-	36   : 'White Cloth',
-	37   : 'Yellow flower',
-	38   : 'Red rose',
-	39   : 'Brown Mushroom',
-	40   : 'Red Mushroom',
-	41   : 'Gold Block',
-	42   : 'Iron Block',
-	43   : 'Double Step',
-	44   : 'Step',
-	45   : 'Brick',
-	46   : 'TNT',
-	47   : 'Bookcase',
-	48   : 'Mossy Cobblestone',
-	49   : 'Obsidian',
-	50   : 'Torch',
-	51   : 'Fire',
-	52   : 'Mob Spawner',
-	53   : 'Wooden Stairs',
-	54   : 'Chest',
-	55   : 'Redstone Wire',
-	56   : 'Diamond Ore',
-	57   : 'Diamond Block',
-	58   : 'Workbench',
-	59   : 'Crops',
-	60   : 'Soil',
-	61   : 'Furnace',
-	62   : 'Burning Furnace',
-	63   : 'Sign Post',
-	64   : 'Wooden Door',
-	65   : 'Ladder',
-	66   : 'Minecart Tracks',
-	67   : 'Cobblestone Stairs',
-	68   : 'Wall Sign',
-	69   : 'Lever',
-	70   : 'Stone Pressure Plate',
-	71   : 'Iron Door',
-	72   : 'Wooden Pressure Plate',
-	73   : 'Redstone Ore',
-	74   : 'Glowing Redstone Ore',
-	75   : 'Redstone torch Off',
-	76   : 'Redstone torch On',
-	77   : 'Stone Button',
-	78   : 'Snow',
-	79   : 'Ice',
-	80   : 'Snow Block',
-	81   : 'Cactus',
-	82   : 'Clay',
-	83   : 'Reed',
-	84   : 'Jukebox',
-	85   : 'Fence',
-	86   : 'Pumpkin',
-	87   : 'Bloodstone',
-	88   : 'Slow Sand',
-	89   : 'Lightstone',
-	90   : 'Portal',
-	91   : 'Jack-O-Lantern',
-	256  : 'Iron Spade',
-	257  : 'Iron Pickaxe',
-	258  : 'Iron Axe',
-	259  : 'Flint and Steel',
-	260  : 'Apple',
-	261  : 'Bow',
-	262  : 'Arrow',
-	263  : 'Coal',
-	264  : 'Diamond',
-	265  : 'Iron Ingot',
-	266  : 'Gold Ingot',
-	267  : 'Iron Sword',
-	268  : 'Wooden Sword',
-	269  : 'Wooden Spade',
-	270  : 'Wooden Pickaxe',
-	271  : 'Wooden Axe',
-	272  : 'Stone Sword',
-	273  : 'Stone Spade',
-	274  : 'Stone Pickaxe',
-	275  : 'Stone Axe',
-	276  : 'Diamond Sword',
-	277  : 'Diamond Spade',
-	278  : 'Diamond Pickaxe',
-	279  : 'Diamond Axe',
-	280  : 'Stick',
-	281  : 'Bowl',
-	282  : 'Mushroom Soup',
-	283  : 'Gold Sword',
-	284  : 'Gold Spade',
-	285  : 'Gold Pickaxe',
-	286  : 'Gold Axe',
-	287  : 'String',
-	288  : 'Feather',
-	289  : 'Gunpowder',
-	290  : 'Wooden Hoe',
-	291  : 'Stone Hoe',
-	292  : 'Iron Hoe',
-	293  : 'Diamond Hoe',
-	294  : 'Gold Hoe',
-	295  : 'Seeds',
-	296  : 'Wheat',
-	297  : 'Bread',
-	298  : 'Leather Helmet',
-	299  : 'Leather Chestplate',
-	300  : 'Leather Pants',
-	301  : 'Leather Boots',
-	302  : 'Chainmail Helmet',
-	303  : 'Chainmail Chestplate',
-	304  : 'Chainmail Pants',
-	305  : 'Chainmail Boots',
-	306  : 'Iron Helmet',
-	307  : 'Iron Chestplate',
-	308  : 'Iron Pants',
-	309  : 'Iron Boots',
-	310  : 'Diamond Helmet',
-	311  : 'Diamond Chestplate',
-	312  : 'Diamond Pants',
-	313  : 'Diamond Boots',
-	314  : 'Gold Helmet',
-	315  : 'Gold Chestplate',
-	316  : 'Gold Pants',
-	317  : 'Gold Boots',
-	318  : 'Flint',
-	319  : 'Pork',
-	320  : 'Grilled Pork',
-	321  : 'Paintings',
-	322  : 'Golden apple',
-	323  : 'Sign',
-	324  : 'Wooden door',
-	325  : 'Bucket',
-	326  : 'Water bucket',
-	327  : 'Lava bucket',
-	328  : 'Mine cart',
-	329  : 'Saddle',
-	330  : 'Iron door',
-	331  : 'Redstone',
-	332  : 'Snowball',
-	333  : 'Boat',
-	334  : 'Leather',
-	335  : 'Milk Bucket',
-	336  : 'Clay Brick',
-	337  : 'Clay Balls',
-	338  : 'Reed',
-	339  : 'Paper',
-	340  : 'Book',
-	341  : 'Slime Ball',
-	342  : 'Storage Minecart',
-	343  : 'Powered Minecart',
-	344  : 'Egg',
-	345  : 'Compass',
-	346  : 'Fishing Rod',
-	347  : 'Watch',
-	348  : 'Gold Dust',
-	349  : 'Raw Fish',
-	350  : 'Cooked Fish',
-	2256 : 'Gold Record',
-	2257 : 'Green Record',
-}
+itemsdb_data = [
+	[0,    0, 'Air'],
+	[1,    0, 'Stone'],
+	[2,    0, 'Grass'],
+	[3,    0, 'Dirt'],
+	[4,    0, 'Cobblestone'],
+	[5,    0, 'Wood'],
+	[6,    0, 'Sapling'],
+	[7,    0, 'Adminium'],
+	[8,    0, 'Water'],
+	[9,    0, 'Stationary water'],
+	[10,   0, 'Lava'],
+	[11,   0, 'Stationary lava'],
+	[12,   0, 'Sand'],
+	[13,   0, 'Gravel'],
+	[14,   0, 'Gold ore'],
+	[15,   0, 'Iron ore'],
+	[16,   0, 'Coal ore'],
+	[17,   0, 'Log'],
+	[17,   1, 'Redwood'],
+	[17,   2, 'Birch'],
+	[18,   0, 'Leaves'],
+	[19,   0, 'Sponge'],
+	[20,   0, 'Glass'],
+	[21,   0, 'Lapis Lazuli Ore'],
+	[22,   0, 'Lapis Lazuli Block'],
+	[23,   0, 'Dispenser'],
+	[24,   0, 'Sandstone'],
+	[25,   0, 'Note Block'],
+	#[26,   0, 'Aqua green Cloth'],
+	#[27,   0, 'Cyan Cloth'],
+	#[28,   0, 'Blue Cloth'],
+	#[29,   0, 'Purple Cloth'],
+	#[30,   0, 'Indigo Cloth'],
+	#[31,   0, 'Violet Cloth'],
+	#[32,   0, 'Magenta Cloth'],
+	#[33,   0, 'Pink Cloth'],
+	#[34,   0, 'Black Cloth'],
+	#[35,   0, Gray Cloth / White Cloth'],
+	[35,   0, 'White Wool'],
+	[35,   1, 'Orange Wool'],
+	[35,   2, 'Magenta Wool'],
+	[35,   3, 'Light Blue Wool'],
+	[35,   4, 'Yellow Wool'],
+	[35,   5, 'Light Green Wool'],
+	[35,   6, 'Pink Wool'],
+	[35,   7, 'Gray Wool'],
+	[35,   8, 'Light Gray Wool'],
+	[35,   9, 'Cyan Wool'],
+	[35,  10, 'Purple Wool'],
+	[35,  11, 'Blue Wool'],
+	[35,  12, 'Brown Wool'],
+	[35,  13, 'Dark Green Wool'],
+	[35,  14, 'Red Wool'],
+	[35,  15, 'Black Wool'],
+	#[36,   0, 'White Cloth'],
+	[37,   0, 'Yellow flower'],
+	[38,   0, 'Red rose'],
+	[39,   0, 'Brown Mushroom'],
+	[40,   0, 'Red Mushroom'],
+	[41,   0, 'Gold Block'],
+	[42,   0, 'Iron Block'],
+	[43,   0, 'Double Stone Slab'],
+	[44,   0, 'Stone Slab'],
+	[45,   0, 'Brick'],
+	[46,   0, 'TNT'],
+	[47,   0, 'Bookcase'],
+	[48,   0, 'Moss Stone'],
+	[49,   0, 'Obsidian'],
+	[50,   0, 'Torch'],
+	[51,   0, 'Fire'],
+	[52,   0, 'Mob Spawner'],
+	[53,   0, 'Wooden Stairs'],
+	[54,   0, 'Chest'],
+	[55,   0, 'Redstone Wire'],
+	[56,   0, 'Diamond Ore'],
+	[57,   0, 'Diamond Block'],
+	[58,   0, 'Workbench'],
+	[59,   0, 'Crops'],
+	[60,   0, 'Soil'],
+	[61,   0, 'Furnace'],
+	[62,   0, 'Burning Furnace'],
+	[63,   0, 'Sign Post'],
+	[64,   0, 'Wooden Door'],
+	[65,   0, 'Ladder'],
+	[66,   0, 'Minecart Tracks'],
+	[67,   0, 'Cobblestone Stairs'],
+	[68,   0, 'Wall Sign'],
+	[69,   0, 'Lever'],
+	[70,   0, 'Stone Pressure Plate'],
+	[71,   0, 'Iron Door'],
+	[72,   0, 'Wooden Pressure Plate'],
+	[73,   0, 'Redstone Ore'],
+	[74,   0, 'Glowing Redstone Ore'],
+	[75,   0, 'Redstone torch Off'],
+	[76,   0, 'Redstone torch On'],
+	[77,   0, 'Stone Button'],
+	[78,   0, 'Snow'],
+	[79,   0, 'Ice'],
+	[80,   0, 'Snow Block'],
+	[81,   0, 'Cactus'],
+	[82,   0, 'Clay'],
+	[83,   0, 'Sugar Cane'],
+	[84,   0, 'Jukebox'],
+	[85,   0, 'Fence'],
+	[86,   0, 'Pumpkin'],
+	[87,   0, 'Netherrack'],
+	[88,   0, 'Soul Sand'],
+	[89,   0, 'Glowstone'],
+	[90,   0, 'Portal'],
+	[91,   0, 'Jack-O-Lantern'],
+	[92,   0, 'Cake Block'],
+	[256,  0, 'Iron Spade'],
+	[257,  0, 'Iron Pickaxe'],
+	[258,  0, 'Iron Axe'],
+	[259,  0, 'Flint and Steel'],
+	[260,  0, 'Apple'],
+	[261,  0, 'Bow'],
+	[262,  0, 'Arrow'],
+	[263,  0, 'Coal'],
+	[264,  0, 'Diamond'],
+	[265,  0, 'Iron Ingot'],
+	[266,  0, 'Gold Ingot'],
+	[267,  0, 'Iron Sword'],
+	[268,  0, 'Wooden Sword'],
+	[269,  0, 'Wooden Spade'],
+	[270,  0, 'Wooden Pickaxe'],
+	[271,  0, 'Wooden Axe'],
+	[272,  0, 'Stone Sword'],
+	[273,  0, 'Stone Spade'],
+	[274,  0, 'Stone Pickaxe'],
+	[275,  0, 'Stone Axe'],
+	[276,  0, 'Diamond Sword'],
+	[277,  0, 'Diamond Spade'],
+	[278,  0, 'Diamond Pickaxe'],
+	[279,  0, 'Diamond Axe'],
+	[280,  0, 'Stick'],
+	[281,  0, 'Bowl'],
+	[282,  0, 'Mushroom Soup'],
+	[283,  0, 'Gold Sword'],
+	[284,  0, 'Gold Spade'],
+	[285,  0, 'Gold Pickaxe'],
+	[286,  0, 'Gold Axe'],
+	[287,  0, 'String'],
+	[288,  0, 'Feather'],
+	[289,  0, 'Gunpowder'],
+	[290,  0, 'Wooden Hoe'],
+	[291,  0, 'Stone Hoe'],
+	[292,  0, 'Iron Hoe'],
+	[293,  0, 'Diamond Hoe'],
+	[294,  0, 'Gold Hoe'],
+	[295,  0, 'Seeds'],
+	[296,  0, 'Wheat'],
+	[297,  0, 'Bread'],
+	[298,  0, 'Leather Helmet'],
+	[299,  0, 'Leather Chestplate'],
+	[300,  0, 'Leather Pants'],
+	[301,  0, 'Leather Boots'],
+	[302,  0, 'Chainmail Helmet'],
+	[303,  0, 'Chainmail Chestplate'],
+	[304,  0, 'Chainmail Pants'],
+	[305,  0, 'Chainmail Boots'],
+	[306,  0, 'Iron Helmet'],
+	[307,  0, 'Iron Chestplate'],
+	[308,  0, 'Iron Pants'],
+	[309,  0, 'Iron Boots'],
+	[310,  0, 'Diamond Helmet'],
+	[311,  0, 'Diamond Chestplate'],
+	[312,  0, 'Diamond Pants'],
+	[313,  0, 'Diamond Boots'],
+	[314,  0, 'Gold Helmet'],
+	[315,  0, 'Gold Chestplate'],
+	[316,  0, 'Gold Pants'],
+	[317,  0, 'Gold Boots'],
+	[318,  0, 'Flint'],
+	[319,  0, 'Pork'],
+	[320,  0, 'Grilled Pork'],
+	[321,  0, 'Paintings'],
+	[322,  0, 'Golden apple'],
+	[323,  0, 'Sign'],
+	[324,  0, 'Wooden door'],
+	[325,  0, 'Bucket'],
+	[326,  0, 'Water bucket'],
+	[327,  0, 'Lava bucket'],
+	[328,  0, 'Mine cart'],
+	[329,  0, 'Saddle'],
+	[330,  0, 'Iron door'],
+	[331,  0, 'Redstone'],
+	[332,  0, 'Snowball'],
+	[333,  0, 'Boat'],
+	[334,  0, 'Leather'],
+	[335,  0, 'Milk Bucket'],
+	[336,  0, 'Clay Brick'],
+	[337,  0, 'Clay Balls'],
+	[338,  0, 'Sugar Cane'],
+	[339,  0, 'Paper'],
+	[340,  0, 'Book'],
+	[341,  0, 'Slime Ball'],
+	[342,  0, 'Storage Minecart'],
+	[343,  0, 'Powered Minecart'],
+	[344,  0, 'Egg'],
+	[345,  0, 'Compass'],
+	[346,  0, 'Fishing Rod'],
+	[347,  0, 'Watch'],
+	[348,  0, 'Glowstone Dust'],
+	[349,  0, 'Raw Fish'],
+	[350,  0, 'Cooked Fish'],
+	[351,  0, 'Ink Sack'],
+	[351,  1, 'Rose Red'],
+	[351,  2, 'Cactus Green'],
+	[351,  3, 'Coco Beans'],
+	[351,  4, 'Lapis Lazuli'],
+	[351,  5, 'Purple Dye'],
+	[351,  6, 'Cyan Dye'],
+	[351,  7, 'Light Gray Dye'],
+	[351,  8, 'Gray Dye'],
+	[351,  9, 'Pink Dye'],
+	[351,  10, 'Lime Dye'],
+	[351,  11, 'Dandelion Yellow'],
+	[351,  12, 'Light Blue Dye'],
+	[351,  13, 'Magenta Dye'],
+	[351,  14, 'Orange Dye'],
+	[351,  15, 'Bone Meal'],
+	[352,  0, 'Bone'],
+	[353,  0, 'Sugar'],
+	[354,  0, 'Cake'],
+	[2256, 0, 'Gold Music Disc'],
+	[2257, 0, 'Green Music Disc'],
+]
 
 invmap = \
 	[(x, 'quick') for x in range(0,9)] + \
@@ -247,9 +285,19 @@ dimensions = {
 }
 
 defaultkits = { # Only used if kits.dat doesn't exist.
-	'Diamond Miner': ( (1, 279), (1, 278), (1, 277), (1, 293) ),
-	'Diamond Fighter': ( (1, 276), (1, 310), (1, 311), (1, 313), (1, 312) ),
+	'Diamond Miner': ( (1, 279, 0), (1, 278, 0), (1, 277, 0), (1, 293, 0) ),
+	'Diamond Fighter': ( (1, 276, 0), (1, 310, 0), (1, 311, 0), (1, 313, 0), (1, 312, 0) ),
 }
+
+class ItemDB(sdb.SDB):
+	def nbt_to_name(self, nbt_compound):
+		item_id = nbt_compound['id'].value
+		damage = nbt_compound['Damage'].value
+		item = itemdb.getx(id=item_id, damage=damage)
+		if not item:
+			item = itemdb.get(item_id)
+		return(item)
+itemdb = ItemDB(data= itemsdb_data, cols=['id', 'damage', 'name'], id='id')
 
 class MCPlayerEditError(Exception):
 	pass
@@ -271,6 +319,17 @@ class MCPlayerEdit(icmd.ICmdBase):
 		for line in file(path):
 			name, contents = line.split('\t', 1)
 			kits[name] = eval(contents, {'__builtins__': None})
+
+		# Backwards compatibility
+		for name, contents in kits.items():
+			if contents and len(contents[0]) == 2:
+				# Convert to new format
+				new_contents = []
+				for c in contents:
+					item = list(c)
+					item.append(0)
+					new_contents.append(item)
+				kits[name] = new_contents
 		return(kits)
 
 	def _kit_save(self, path):
@@ -433,7 +492,11 @@ class MCPlayerEdit(icmd.ICmdBase):
 			if slot[1] == type or type == 'all':
 				print 'slot %3i (%6s inventory):' % (slot[0], slot[1]),
 				if inventory[slot[0]]:
-					print '%2i x %s' % (inventory[slot[0]]['Count'].value, items[inventory[slot[0]]['id'].value])
+					item = itemdb.nbt_to_name(inventory[slot[0]])
+					if not item:
+						print '%2i x %s' % (inventory[slot[0]]['Count'].value, 'Unknown?')
+					else:
+						print '%2i x %s' % (inventory[slot[0]]['Count'].value, item['name'])
 				else:
 					print
 
@@ -478,16 +541,17 @@ class MCPlayerEdit(icmd.ICmdBase):
 		itemid = None
 		try:
 			itemid = int(item)
+			add_item = itemdb.get(itemid)
 		except ValueError:
-			for i in items.items():
-				if i[1].lower() == item.lower():
-					itemid = i[0]
-					break
-		if not itemid or itemid not in items:
+			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
+			if rows:
+				add_item = rows[0]
+
+		if not add_item:
 			raise MCPlayerEditError(6, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
 
-		assignedslots = self._invadd([(count, itemid)])
-		self._output("Added %i x %s in slot %i" % (count, items[itemid], assignedslots[0]))
+		assignedslots = self._invadd([(count, add_item['id'], add_item['damage'])])
+		self._output("Added %i x %s in slot %i" % (count, add_item['name'], assignedslots[0]))
 
 		self.modified = True
 
@@ -516,7 +580,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				# Found an empty slot. Add the next item 
 				newitem = nbt.TAG_Compound()
 				newitem['id'] = nbt.TAG_Short(item[1])
-				newitem['Damage'] = nbt.TAG_Short(0)
+				newitem['Damage'] = nbt.TAG_Short(item[2])
 				newitem['Count'] = nbt.TAG_Byte(item[0])
 				newitem['Slot'] = nbt.TAG_Byte(slot[0])
 				self.level['Data']['Player']['Inventory'].append(newitem)
@@ -540,7 +604,13 @@ class MCPlayerEdit(icmd.ICmdBase):
 			sys.stdout.write("The following kits are available:\n")
 			for name, contents in self.kits.items():
 				sys.stdout.write("  %s:\n" % (name))
-				print '    %s' % (', '.join(['%i x %s' % (c[0], items[c[1]]) for c in contents]))
+				items = []
+				item_count = contents[0]
+				for item_count, item_id, item_damage in contents:
+					item = itemdb.getx(id=item_id, damage=item_damage)
+					item_name = item['name']
+					items.append( (item_count, item_name) )
+				print '    %s' % (', '.join(['%i x %s' % (item[0], item[1]) for item in items]))
 		else:
 			self._checkloaded()
 
@@ -593,11 +663,14 @@ class MCPlayerEdit(icmd.ICmdBase):
 		266: Gold Ingot
 		265: Iron Ingot
 		"""
-		sitems = [(item[1], item[0]) for item in items.items()]
-		sitems.sort()
-		for item in sitems:
-			if not search or (search and search.lower() in item[0].lower()):
-				print '%5i: %s' % (item[1], item[0])
+		if search:
+			search = search.lower()
+			items = itemdb.select(lambda row: search in row['name'].lower(), cmp)
+		else:
+			items = itemdb.select()
+
+		for item in items:
+			print '%5i: %s' % (item['id'], item['name'])
 
 	def clear(self, slot):
 		"""
@@ -714,6 +787,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			raise MCPlayerEditError(13, 'Invalid time of day. Valid options: %s' % (', '.join(timemap.keys())))
 
 		self.level['Data']['Time'].value = timemap[time]
+		print "Time of day set to %s" % (time)
 		self.modified = True
 
 	def bookmark(self, bookmark, *args):
@@ -856,7 +930,7 @@ class MCPlayerCmd(icmd.ICmd):
 		# Get icmd module's readline buffer, instead of 'our' module's instance.
 		line = icmd.readline.get_line_buffer()
 		if line.startswith('give'):
-			w = [item for item in items.values() if item.lower().startswith(text.lower())]
+			w = [item['name'] for item in itemdb.select(lambda row: row['name'].lower().startswith(text.lower()))]
 		elif line.startswith('kit'):
 			w = [key for key in kits.keys() if key.lower().startswith(text.lower())]
 		elif line.startswith('list'):
