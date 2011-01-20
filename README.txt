@@ -179,6 +179,7 @@ Credits:
     Maramonster  (testing, suggestions)
     Yobbobandana (bugfixes, patches)
 	Foone        (warpto command patch)
+	Dustin Pyle  (kitsave patch)
 
 Development
 -----------

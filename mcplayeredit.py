@@ -164,6 +164,7 @@ itemsdb_data = [
 	[261,  0, 'Bow'],
 	[262,  0, 'Arrow'],
 	[263,  0, 'Coal'],
+	[263,  1, 'Charcoal'],
 	[264,  0, 'Diamond'],
 	[265,  0, 'Iron Ingot'],
 	[266,  0, 'Gold Ingot'],
@@ -293,10 +294,14 @@ class ItemDB(sdb.SDB):
 	def nbt_to_name(self, nbt_compound):
 		item_id = nbt_compound['id'].value
 		damage = nbt_compound['Damage'].value
+		return(self.get_item(item_id, damage))
+
+	def get_item(self, item_id, damage):
 		item = itemdb.getx(id=item_id, damage=damage)
 		if not item:
 			item = itemdb.get(item_id)
 		return(item)
+
 itemdb = ItemDB(data= itemsdb_data, cols=['id', 'damage', 'name'], id='id')
 
 class MCPlayerEditError(Exception):
@@ -607,9 +612,10 @@ class MCPlayerEdit(icmd.ICmdBase):
 				items = []
 				item_count = contents[0]
 				for item_count, item_id, item_damage in contents:
-					item = itemdb.getx(id=item_id, damage=item_damage)
-					item_name = item['name']
-					items.append( (item_count, item_name) )
+					item = itemdb.get_item(item_id, item_damage)
+					if item:
+						item_name = item['name']
+						items.append( (item_count, item_name) )
 				print '    %s' % (', '.join(['%i x %s' % (item[0], item[1]) for item in items]))
 		else:
 			self._checkloaded()
@@ -640,7 +646,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		contents = []
 		for slot in self.level['Data']['Player']['Inventory']:
-			inv.append( (slot['Count'].value, slot['id'].value) )
+			contents.append( [slot['Count'].value, slot['id'].value, slot['Damage'].value] )
 
 		self.kits[name] = contents
 		self._kit_save(self.kitpath)

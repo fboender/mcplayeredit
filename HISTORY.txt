@@ -1,8 +1,9 @@
 v0.7 (19 Jan 2010)
  - Update for Minecraft Beta 1.2
  - Added new block types (note blocks, wool, birch, redwood, sandstone, cake)
- - Added new items (Dyes, bone, sugar, cake)
+ - Added new items (Dyes, bone, sugar, cake, charcoal)
  - Renamed some items to match Minecraft's tooltips.
+ - Bugfix in kitsave command (Patch by Dustin Pyle)
 
 v0.6 (09 Dec 2010)
  - Improved commandline history and tab-completion on Windows.
