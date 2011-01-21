@@ -61,9 +61,13 @@ class SDB(object):
 	# Update all rows where name == 'tom', set age to 20 and occupation to 'Junior Developer'
 	>>> sdb.update({'age': 20, 'occupation': 'Junior Developer'}, lambda row: row['name'] == 'tom')
 
-	# Select by ID
+	# Select a single row by ID
 	>>> sdb.get('tom')
 	{'age': 20, 'name': 'tom', 'occupation': 'Junior Developer'}
+
+	# Select a single row by muliple fields (values must exactly match)
+	>>> sdb.getx(name='seymore', occupation='Student')
+	{'age': 20, 'name': 'seymore', 'occupation': 'Student'}
 
 	# Delete all rows where age < 30
 	>>> sdb.delete(lambda row: row['age'] < 30)
