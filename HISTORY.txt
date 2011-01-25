@@ -1,3 +1,6 @@
+v0.8 (25 Jan 2011)
+ - Fix for a bug which caused MCPlayerEdit to crash when trying to add a non-existing item. (patch by Stephen Rollyson).
+
 v0.7 (19 Jan 2011)
  - Update for Minecraft Beta 1.2
  - Added new block types (note blocks, wool, birch, redwood, sandstone, cake)

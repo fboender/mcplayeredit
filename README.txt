@@ -173,13 +173,14 @@ Credits:
 
  Contributions / Testing
 
-    Camel        (suggestions)
-    LadyCygna    (testing, suggestions)
-	Lillefix     (documentation fix)
-    Maramonster  (testing, suggestions)
-    Yobbobandana (bugfixes, patches)
-	Foone        (warpto command patch)
-	Dustin Pyle  (kitsave patch)
+    Camel            (suggestions)
+    LadyCygna        (testing, suggestions)
+	Lillefix         (documentation fix)
+    Maramonster      (testing, suggestions)
+    Yobbobandana     (bugfixes, patches)
+	Foone            (warpto command patch)
+	Dustin Pyle      (kitsave patch)
+	Stephen Rollyson (bugfixes, patches)
 
 Development
 -----------

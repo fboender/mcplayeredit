@@ -544,6 +544,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		# Find out which item the user is trying to add
 		itemid = None
+		add_item = None
 		try:
 			itemid = int(item)
 			add_item = itemdb.get(itemid)
