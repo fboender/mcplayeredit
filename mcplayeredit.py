@@ -19,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 7)
+__VERSION__ = (0, 8)
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -514,6 +514,10 @@ class MCPlayerEdit(icmd.ICmdBase):
 		item ID (see the `items` command) or the name of an item. Fails if
 		there are no empty slots in the players inventory.
 
+		Sometimes multiple items have the same ID. If you select such an item
+		by id, you will be given an additional option menu from which you can
+		chose which item you want.
+
 		You CAN stack unstackable items (64 x Diamond Pickaxe), and it will
 		work, but it might corrupt your game. NO GAME-LOGIC IS CHECKED WHEN
 		GIVING ITEMS! In case of corruption, see README.txt.
@@ -547,7 +551,21 @@ class MCPlayerEdit(icmd.ICmdBase):
 		add_item = None
 		try:
 			itemid = int(item)
-			add_item = itemdb.get(itemid)
+			items = itemdb.select(lambda row: row['id'] == itemid)
+
+			if len(items) > 1:
+				# Multiple items with the same id. Allow user to select by damage
+				print "\nThere are multiple items with that ID:"
+				for i_item in items:
+					print "%5s: %s" % (i_item['damage'], i_item['name'])
+				damage = raw_input('Select a number or nothing to abort: ')
+				if not damage:
+					return
+				d_item = itemdb.getx(id=itemid, damage=int(damage))
+				if d_item:
+					add_item = d_item
+			else:
+				add_item = items[0]['id']
 		except ValueError:
 			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
 			if rows:

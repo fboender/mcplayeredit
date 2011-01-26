@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.7
+MCPlayerEdit  v0.8
 
 About
 -----
