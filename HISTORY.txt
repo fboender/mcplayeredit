@@ -1,3 +1,8 @@
+v0.9 (27 Jan 2011)
+ - Fix for a bug in the 'give' command which caused MCPlayerEdit to crash when
+   adding an existing item by id and there weren't multiple items with that id.
+   (Patch by rilian4)
+
 v0.8 (26 Jan 2011)
  - Fix for a bug which caused MCPlayerEdit to crash when trying to add a
    non-existing item. (patch by Stephen Rollyson).
