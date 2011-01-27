@@ -565,7 +565,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				if d_item:
 					add_item = d_item
 			else:
-				add_item = items[0]['id']
+				add_item = itemdb.getx(id=itemid, damage=0)
 		except ValueError:
 			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
 			if rows:
