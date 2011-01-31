@@ -34,8 +34,8 @@ Requirements
 * Python 2.6+
 * readline (libreadline) for tab-completion support.
 
-Compatibly
------------
+Compatibility
+-------------
 
 Developed for and on:
 
@@ -43,27 +43,27 @@ Developed for and on:
 
 Confirmed to be working on:
 
-	- Ubuntu 10.04
-	- Windows XP (Limited tab-completion functionality)
-	- Windows 7 (Limited tab-completion functionality)
-	- Mac OS X 10.5.5
+    - Ubuntu 10.04
+    - Windows XP (Limited tab-completion functionality)
+    - Windows 7 (Limited tab-completion functionality)
+    - Mac OS X 10.5.5
 
 Should work on:
 
     - Every Unix-like OS
     - MacOSX
-	- Windows Vista
+    - Windows Vista
 
 Usage
 -----
 
 GNU/Linux, Unix-compatible:
 
-	Unpack the tarball
+    Unpack the tarball
 
     $ tar -vxzf mcplayeredit-0.1.tar.gz
 
-	Start MCPlayerEdit
+    Start MCPlayerEdit
 
     $ cd mcplayeredit
     $ python ./mcplayeredit
@@ -77,15 +77,15 @@ Windows (XP, 7):
 
 MacOS X:
 
-	Using Finder
+    Using Finder
 
     - Download mcplayeredit-0.5.tar.gz 
-	- Open the containing folder
-	- Double-click the .tar.gz file to extract it.
-	- Open the extracted mcplayeredit-0.5 folder
-	- Double-click the 'mcplayeredit.py' file. This will most likely open it in
-	  the Python IDLE editor
-	- Press F5 to run the Python script.
+    - Open the containing folder
+    - Double-click the .tar.gz file to extract it.
+    - Open the extracted mcplayeredit-0.5 folder
+    - Double-click the 'mcplayeredit.py' file. This will most likely open it in
+      the Python IDLE editor
+    - Press F5 to run the Python script.
 
 Make sure you are not playing the World in Minecraft before loading the level
 in MCPlayerEdit, or your changes will not take effect. You can modify a world
@@ -98,8 +98,8 @@ changes.
 
 Some usage examples:
 
-	(You can use tab completion if your on Linux. Tab completion also works on
-	Win XP/7, but is not as full-featured as on *Nix systems)
+    (You can use tab completion if your on Linux. Tab completion also works on
+    Win XP/7, but is not as full-featured as on *Nix systems)
 
     > load 1
     Loaded.
@@ -175,12 +175,13 @@ Credits:
 
     Camel            (suggestions)
     LadyCygna        (testing, suggestions)
-	Lillefix         (documentation fix)
+    Lillefix         (documentation fix)
     Maramonster      (testing, suggestions)
     Yobbobandana     (bugfixes, patches)
-	Foone            (warpto command patch)
-	Dustin Pyle      (kitsave patch)
-	Stephen Rollyson (bugfixes, patches)
+    Foone            (warpto command patch)
+    Dustin Pyle      (kitsave patch)
+    Stephen Rollyson (bugfixes, patches)
+    Rilian4          (ideas, patches)
 
 Development
 -----------
