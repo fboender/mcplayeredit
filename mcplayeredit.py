@@ -897,8 +897,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		Move player to specific coordinates.
 		Move the player to a specific set of coordinates. If no dimension is
-		given, defaults to the normal dimension. 'y' is the height. 
-		
+		given, defaults to the normal dimension. 'y' is the height.
+
 		CAREFUL: You can easily warp yourself into blocks, which will cause you
 		to die!
 		"""
@@ -955,6 +955,16 @@ class MCPlayerEdit(icmd.ICmdBase):
 					self.save()
 					print "Inventory restored"
 		self._output("\nNo longer tracking inventory.")
+
+	def seed(self):
+		"""
+		Show the world's seed.
+		Show the world's seed. It can be reused when creating a new world
+		(although the spawn location can be up to 200 meters away).
+		"""
+		self._checkloaded()
+		print "The seed for this world is:"
+		print "  ", self.level['Data']['RandomSeed'].value
 
 	def quit(self):
 		"""
