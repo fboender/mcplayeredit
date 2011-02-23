@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.9
+MCPlayerEdit  v0.10
 
 About
 -----
@@ -14,6 +14,7 @@ Features include:
 - Setting the in-game time of day.
 - Bookmark locations and warp back to them (works inter-dimensional).
 - Track your inventory in case of death.
+- Showing the random seed for your world.
 - Commandline history
 - Commandline tab-completion (only on GNU/Linux, WinXP for now)
 
@@ -32,6 +33,9 @@ Requirements
 ------------
 
 * Python 2.6+
+
+Optionally:
+
 * readline (libreadline) for tab-completion support.
 
 Compatibility
@@ -61,17 +65,17 @@ GNU/Linux, Unix-compatible:
 
     Unpack the tarball
 
-    $ tar -vxzf mcplayeredit-0.1.tar.gz
+    $ tar -vxzf mcplayeredit-0.10.tar.gz
 
     Start MCPlayerEdit
 
     $ cd mcplayeredit
     $ python ./mcplayeredit
-    > load <worldnr>
+    > load <worldname>
 
 Windows (XP, 7):
 
-    - Unpack mcplayeredit-0.1.tar.gz with something like 7zip.
+    - Unpack mcplayeredit-0.10.tar.gz with something like 7zip.
     - Navigate to the mcplayeredit folder
     - Double click the 'mcplayeredit.py' file.
 
@@ -79,10 +83,10 @@ MacOS X:
 
     Using Finder
 
-    - Download mcplayeredit-0.5.tar.gz 
+    - Download mcplayeredit-0.10.tar.gz 
     - Open the containing folder
     - Double-click the .tar.gz file to extract it.
-    - Open the extracted mcplayeredit-0.5 folder
+    - Open the extracted mcplayeredit-0.10 folder
     - Double-click the 'mcplayeredit.py' file. This will most likely open it in
       the Python IDLE editor
     - Press F5 to run the Python script.
@@ -101,24 +105,31 @@ Some usage examples:
     (You can use tab completion if your on Linux. Tab completion also works on
     Win XP/7, but is not as full-featured as on *Nix systems)
 
-    > load 1
+    > load
+    The following worlds are available for loading:
+      World1
+      New World
+      Epic SHIT
+      New World-
+
+    > load New World
     Loaded.
 
-    World 1> move spawn
+    New World> move spawn
     Moved spawnpoint to current player position
 
-    World 1> list
+    New World> list
     slot   0 ( quick inventory):  1 x Bow
     slot   1 ( quick inventory):  1 x Iron Sword
     ...
 
-    World 1> items tn
+    New World> items tn
        46: TNT
 
-    World 1> give 64 tnt
+    New World> give 64 tnt
     Added 64 x TNT in slot 0
 
-    World 1> items diamond
+    New World> items diamond
       264: Diamond
       279: Diamond Axe
        57: Diamond Block
@@ -132,27 +143,27 @@ Some usage examples:
       277: Diamond Spade
       276: Diamond Sword
 
-    World 1> give 1 diamond pickaxe
+    New World> give 1 diamond pickaxe
     Added 1 x Diamond Pickaxe in slot 1
 
-    World 1> give 64 264
+    New World> give 64 264
     Added 64 x Diamond in slot 3
 
-    World 1> bookmark Pit of DOOM
+    New World> bookmark Pit of DOOM
     Bookmark 'Pit of DOOM' created.
 
-    World 1> warp
+    New World> warp
     The following bookmarks have been set:
       Isle of Despair: 343.079559 61.620000 -198.879712
       Pit of DOOM: 341.527171 73.620000 -233.944163
 
-    World 1> warp Isle of Despair
+    New World> warp Isle of Despair
     Warped player position to Isle of Despair
 
-    World 1> save
-    Saved. Backup created (/home/user/.minecraft/saves/World1/level.dat.bak)
+    New World> save
+    Saved. Backup created (/home/user/.minecraft/saves/New World/level.dat.bak)
    
-    World 1> exit
+    New World> exit
 
 Copyright
 ---------
