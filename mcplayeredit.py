@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-#
 # Todo:
 # - autocomplete needs work
 #   * Values with spaces are not quoted/escaped properly. 
 #   * Autocomplete on mac
 #   * completing 'kit' doesn't show 'kitsave'.
+# - autocomplete on world files
 # - MacOSX windows support (tab completion)
 # - give/kit will put items in armor slots even if they're not supposed to go
 #   there.
@@ -39,7 +39,9 @@ sys.path.pop(0)
 welcometext = """
 %s v%i.%i by %s
 
-Use 'load <worldnr>' or 'load <path_to_level.dat>' to load a level.
+Use 'load <worldname>' or 'load <path_to_level.dat>' to load a level.
+Ommit the worldname to get a list of worlds.
+
 Type 'help' for a list of commands, 'help <command>' for detailed help.
 'items' gives you a list of all available items.
 """ % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
@@ -107,7 +109,13 @@ itemsdb_data = [
 	[41,   0, 'Gold Block'],
 	[42,   0, 'Iron Block'],
 	[43,   0, 'Double Stone Slab'],
+	[43,   1, 'Double Sandstone Slab'],
+	[43,   2, 'Double Wooden Slab'],
+	[43,   3, 'Double Cobblestone Slab'],
 	[44,   0, 'Stone Slab'],
+	[44,   1, 'Sandstone Slab'],
+	[44,   2, 'Wooden Slab'],
+	[44,   3, 'Cobblestone Slab'],
 	[45,   0, 'Brick'],
 	[46,   0, 'TNT'],
 	[47,   0, 'Bookcase'],
@@ -156,6 +164,8 @@ itemsdb_data = [
 	[90,   0, 'Portal'],
 	[91,   0, 'Jack-O-Lantern'],
 	[92,   0, 'Cake Block'],
+	[93,   0, 'Redstone Repeater Off'],
+	[94,   0, 'Redstone Repeater On'],
 	[256,  0, 'Iron Spade'],
 	[257,  0, 'Iron Pickaxe'],
 	[258,  0, 'Iron Axe'],
@@ -271,6 +281,8 @@ itemsdb_data = [
 	[352,  0, 'Bone'],
 	[353,  0, 'Sugar'],
 	[354,  0, 'Cake'],
+	[355,  0, 'Bed'],
+	[356,  0, 'Redstone Repeater'],
 	[2256, 0, 'Gold Music Disc'],
 	[2257, 0, 'Green Music Disc'],
 ]
@@ -372,74 +384,86 @@ class MCPlayerEdit(icmd.ICmdBase):
 			inventory[slot['Slot'].value] = slot
 		return(inventory)
 
-	def load(self, filename, *args):
+	def load(self, worldname = None, *args):
 		"""
-		Load a player's data
-		Load a player's data. You can either specify the full path to the
-		level.dat file, or a world number to load that world's data.
+		Load a world's data
+		Load a world's data. You can either specify the full path to the
+		level.dat file, or a world name to load that world's data.
 
 		Example:
 
-		> load 4
+		> load New World
 		> load /home/user/.minecraft/saves/World4/level.dat
-
-		Both commands will load World4's information.
 		"""
 		if not self._checkmodified():
 			return(False)
 
-		if args:
-			filename = '%s %s' % (filename, ' '.join(args))
+		# Determine path to Minecraft directory.
+		mcdir = None
+		if sys.platform.startswith('darwin'):
+			mcdir = '%s/Library/Application Support/minecraft/saves/' % (os.environ['HOME'], )
+		elif sys.platform.startswith('win'):
+			mcdir = '%s\.minecraft\saves\\' % (os.environ['APPDATA'], )
+		elif sys.platform.startswith('linux'):
+			mcdir = '%s/.minecraft/saves/' % (os.environ['HOME'], )
 
-		try:
-			# Try to load a world by number.
-			self.world = int(filename)
-			if sys.platform.startswith('darwin'):
-				self.filename = '%s/Library/Application Support/minecraft/saves/World%i/level.dat' % (os.environ['HOME'], self.world)
-			elif sys.platform.startswith('win'):
-				self.filename = '%s\.minecraft\saves\World%i\level.dat' % (os.environ['APPDATA'], self.world)
-			elif sys.platform.startswith('linux'):
-				self.filename = '%s/.minecraft/saves/World%i/level.dat' % (os.environ['HOME'], self.world)
+		if not worldname:
+			# Show a list of available worlds.
+			if not mcdir:
+				raise MCPlayerEditError(2, "Unknown platform. Can't list available worlds")
+			print "The following worlds are available for loading:"
+			for dirname in os.listdir(mcdir):
+				if not dirname.startswith('.'):
+					print "  %s" % (dirname, )
+			return
+		else:
+			# Try to load the provided world.
+			if args:
+				worldname = '%s %s' % (worldname, ' '.join(args))
+
+			if mcdir:
+				if worldname.endswith('level.dat'):
+					worldfile = os.path.join(mcdir, worldname)
+				else:
+					worldfile = os.path.join(mcdir, worldname, 'level.dat')
 			else:
-				raise MCPlayerEditError(2, "Unknown platform. Can't load by world number. Please specify full path")
-			if hasattr(self, 'world'):
-				self.icmd.prompt = 'World %i> ' % (self.world)
-		except ValueError:
-			# Try to load world by full path
-			self.filename = filename
+				if worldname.endswith('level.dat'):
+					worldfile = os.path.join(worldname)
+				else:
+					worldfile = os.path.join(worldname, 'level.dat')
 
-		try:
-			self.level = nbt.load(self.filename)
-		except IOError, e:
-			if e.errno == 2:
-				raise MCPlayerEditError(3, "Invalid filename or worldnumber. Couldn't open '%s'." % (self.filename))
-				del self.filename
-				return(False)
-			else:
-				del self.filename
-				raise e
+			try:
+				self.level = nbt.load(worldfile)
+				self.filename = worldfile
+				self.icmd.prompt = '%s> ' % (worldname)
+			except IOError, e:
+				if e.errno in [2, 21]:
+					raise MCPlayerEditError(3, "Invalid filename or worldname. Couldn't open '%s'." % (worldname))
+					return(False)
+				else:
+					raise e
 
-		# Load the bookmarks, if any
-		self.bookmarks = {}
-		try:
-			for line in file(self.filename + '.bookmarks'):
-				if line.strip():
-					# Check for pre-halloween update format
-					lastfield = line.split(' ')[-1]
-					if not '.' in lastfield:
-						# New format
-						name, x, y, z, dimension = line.strip().rsplit(' ', 4)
-					else:
-						# Old format
-						dimension = 0
-						name, x, y, z = line.strip().rsplit(' ', 3)
+			# Load the bookmarks, if any
+			self.bookmarks = {}
+			try:
+				for line in file(self.filename + '.bookmarks'):
+					if line.strip():
+						# Check for pre-halloween update format
+						lastfield = line.split(' ')[-1]
+						if not '.' in lastfield:
+							# New format
+							name, x, y, z, dimension = line.strip().rsplit(' ', 4)
+						else:
+							# Old format
+							dimension = 0
+							name, x, y, z = line.strip().rsplit(' ', 3)
 
-					self.bookmarks[name] = (float(x), float(y), float(z), int(dimension))
-		except IOError:
-			pass
+						self.bookmarks[name] = (float(x), float(y), float(z), int(dimension))
+			except IOError:
+				pass
 
-		self.modified = False
-		self._output("Loaded.")
+			self.modified = False
+			self._output("Loaded.")
 
 	def save(self):
 		"""
@@ -499,7 +523,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 				if inventory[slot[0]]:
 					item = itemdb.nbt_to_name(inventory[slot[0]])
 					if not item:
-						print '%2i x %s' % (inventory[slot[0]]['Count'].value, 'Unknown?')
+						print '%2i x %s (%i)' % (inventory[slot[0]]['Count'].value, 'Unknown?', inventory[slot[0]]['id'].value)
 					else:
 						print '%2i x %s' % (inventory[slot[0]]['Count'].value, item['name'])
 				else:
