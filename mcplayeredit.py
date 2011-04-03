@@ -19,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 10)
+__VERSION__ = (0, 11)
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -283,6 +283,7 @@ itemsdb_data = [
 	[354,  0, 'Cake'],
 	[355,  0, 'Bed'],
 	[356,  0, 'Redstone Repeater'],
+	[357,  0, 'Cookie'],
 	[2256, 0, 'Gold Music Disc'],
 	[2257, 0, 'Green Music Disc'],
 ]

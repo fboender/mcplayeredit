@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.10
+MCPlayerEdit  v0.11
 
 About
 -----
@@ -65,7 +65,7 @@ GNU/Linux, Unix-compatible:
 
     Unpack the tarball
 
-    $ tar -vxzf mcplayeredit-0.10.tar.gz
+    $ tar -vxzf mcplayeredit-0.11.tar.gz
 
     Start MCPlayerEdit
 
@@ -75,7 +75,7 @@ GNU/Linux, Unix-compatible:
 
 Windows (XP, 7):
 
-    - Unpack mcplayeredit-0.10.tar.gz with something like 7zip.
+    - Unpack mcplayeredit-0.11.tar.gz with something like 7zip.
     - Navigate to the mcplayeredit folder
     - Double click the 'mcplayeredit.py' file.
 
@@ -83,10 +83,10 @@ MacOS X:
 
     Using Finder
 
-    - Download mcplayeredit-0.10.tar.gz 
+    - Download mcplayeredit-0.1r.tar.gz 
     - Open the containing folder
     - Double-click the .tar.gz file to extract it.
-    - Open the extracted mcplayeredit-0.10 folder
+    - Open the extracted mcplayeredit-0.11 folder
     - Double-click the 'mcplayeredit.py' file. This will most likely open it in
       the Python IDLE editor
     - Press F5 to run the Python script.
