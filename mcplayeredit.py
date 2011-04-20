@@ -1,10 +1,6 @@
 #!/usr/bin/python
 
 # Todo:
-# - Bug on reload: 
-#   Test> reload
-#	Loaded.
-#	/home/todsah/.minecraft/saves/Test/level.dat> 
 # - autocomplete needs work
 #   * Values with spaces are not quoted/escaped properly. 
 #   * Autocomplete on mac
@@ -23,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 12)
+__VERSION__ = (0, 13)
 
 import sys
 if sys.version_info[:2] < (2, 6):
