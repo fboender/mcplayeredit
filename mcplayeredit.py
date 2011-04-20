@@ -365,7 +365,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		Checks if a file has already been loaded.
 		"""
 		if not hasattr(self, 'level'):
-			raise MCPlayerEditError(1, "No file loaded yet. Use `load <filename|worldnumber>`.")
+			raise MCPlayerEditError(1, "No file loaded yet. Use `load <filename|worldname>`.")
 
 	def _checkmodified(self):
 		"""
