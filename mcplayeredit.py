@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 # Todo:
+# - Bug on reload: 
+#   Test> reload
+#	Loaded.
+#	/home/todsah/.minecraft/saves/Test/level.dat> 
 # - autocomplete needs work
 #   * Values with spaces are not quoted/escaped properly. 
 #   * Autocomplete on mac
@@ -970,6 +974,66 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self._checkloaded()
 		print "The seed for this world is:"
 		print "  ", self.level['Data']['RandomSeed'].value
+
+	def dump(self, obj=None, depth=0):
+		"""
+		Dump NBT data. (Debug information)
+		Dump the level.dat's NBT data. This is primarily useful for developers.
+		"""
+		self._checkloaded()
+
+		if not obj:
+			obj = self.level
+
+		if isinstance(obj, nbt.TAG_Compound):
+			for name, value in obj.items():
+				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
+					print "    " * depth, name
+					self.dump(value, depth+1)
+				else:
+					print "    " * depth, name, value.value
+		if isinstance(obj, nbt.TAG_List):
+			for value in obj:
+				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
+					self.dump(value, depth+1)
+				else:
+					print "    " * depth, value.value
+
+	def rain(self, onoff, time=60):
+		"""
+		Turn rain/snow on/off (after certain time)
+		Turn rain (snow in some biomes) on or off. Optionally specify a time
+		(in seconds) for the rain/snow to last or how long it should stay off.
+		The default is 60 seconds.
+
+		Examples:
+
+		Make it rain for an hour (real time, not game time)
+		> rain on 60
+		It will rain/snow for 60 seconds (real time)
+
+		> rain off 3600
+		It will not rain/snow for 3600 seconds (real time)
+
+		"""
+		self._checkloaded()
+
+		if onoff.lower().strip() in ['on', 'yes', '1', 'true']:
+			onoff = 1
+		elif onoff.lower().strip() in ['off', 'no', '0', 'false']:
+			onoff = 0
+		else:
+			raise MCPlayerEditError(15, "Invalid value for onoff parameter. 'yes' or 'no'.")
+
+		try:
+			time = int(time)
+		except ValueError:
+			raise MCPlayerEditError(16, "Invalid value for time parameter. Specify a number of seconds.")
+
+		self.level['Data']['raining'].value = onoff
+		self.level['Data']['rainTime'].value = time * 20
+
+		self._output("It will %srain/snow for %i seconds (real time)" % (['not ', ''][onoff], time))
 
 	def quit(self):
 		"""
