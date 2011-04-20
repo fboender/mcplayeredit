@@ -443,6 +443,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 			try:
 				self.level = nbt.load(worldfile)
+				self.worldname = worldname
 				self.filename = worldfile
 				self.icmd.prompt = '%s> ' % (worldname)
 			except IOError, e:
@@ -773,7 +774,10 @@ class MCPlayerEdit(icmd.ICmdBase):
 		Discards the modifications made to the player data and reloads it.
 		"""
 		self._checkloaded()
-		self.load(self.filename)
+		if self.worldname:
+			self.load(self.worldname)
+		else:
+			self.load(self.filename)
 
 	def position(self):
 		"""

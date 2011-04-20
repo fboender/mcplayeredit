@@ -1,3 +1,8 @@
+v0.13 (20 Apr 2011)
+ - Added a command 'rain' with which you can influence the weather.
+ - Fixed a bug in the 'reload' command where the prompt would change to the
+   file location instead of the worldname on reloading.
+
 v0.12 (20 Apr 2011)
  - Update for Minecraft Beta 1.5
  - Added Spruce/Birch saplings (Patch by rilian4)
