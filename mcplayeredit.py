@@ -833,6 +833,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 	def settime(self, time):
 		"""
 		Set the time of day.
+		Set the time of day. Possible times are: 'sunrise', 'noon', 'sunset'
+		and 'midnight'.
 		"""
 		self._checkloaded()
 		timemap = {
