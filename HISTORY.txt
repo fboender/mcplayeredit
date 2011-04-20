@@ -1,3 +1,9 @@
+v0.12 (20 Apr 2011)
+ - Update for Minecraft Beta 1.5
+ - Added Spruce/Birch saplings (Patch by rilian4)
+ - Added Powered/Detector rail (Patch by rilian4)
+ - Renamed "Minecart Track" item to "Rail".
+
 v0.11 (03 Apr 2011)
  - Update for Minecraft Beta 1.4
  - Added cookies (Patch by Rilian4)

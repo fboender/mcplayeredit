@@ -19,7 +19,7 @@
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 11)
+__VERSION__ = (0, 12)
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -54,6 +54,8 @@ itemsdb_data = [
 	[4,    0, 'Cobblestone'],
 	[5,    0, 'Wood'],
 	[6,    0, 'Sapling'],
+	[6,    1, 'Spruce Sapling'],
+	[6,    2, 'Birch Sapling'],
 	[7,    0, 'Adminium'],
 	[8,    0, 'Water'],
 	[9,    0, 'Stationary water'],
@@ -75,6 +77,8 @@ itemsdb_data = [
 	[23,   0, 'Dispenser'],
 	[24,   0, 'Sandstone'],
 	[25,   0, 'Note Block'],
+	[27,   0, 'Powered Rail'],
+	[28,   0, 'Detector Rail'],
 	#[26,   0, 'Aqua green Cloth'],
 	#[27,   0, 'Cyan Cloth'],
 	#[28,   0, 'Blue Cloth'],
@@ -137,7 +141,7 @@ itemsdb_data = [
 	[63,   0, 'Sign Post'],
 	[64,   0, 'Wooden Door'],
 	[65,   0, 'Ladder'],
-	[66,   0, 'Minecart Tracks'],
+	[66,   0, 'Rail'],
 	[67,   0, 'Cobblestone Stairs'],
 	[68,   0, 'Wall Sign'],
 	[69,   0, 'Lever'],
