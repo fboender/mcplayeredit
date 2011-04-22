@@ -908,7 +908,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		Move player to specific coordinates.
 		Move the player to a specific set of coordinates. If no dimension is
-		given, defaults to the normal dimension. 'y' is the height.
+		given, defaults to the normal dimension. Valid dimensions are 'Normal'
+		and 'Nether'. 'y' is the height. y=64 is sealevel.
 
 		CAREFUL: You can easily warp yourself into blocks, which will cause you
 		to die!
@@ -977,7 +978,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		print "The seed for this world is:"
 		print "  ", self.level['Data']['RandomSeed'].value
 
-	def dump(self, obj=None, depth=0):
+	def nbtdump(self, obj=None, path=''):
 		"""
 		Dump NBT data. (Debug information)
 		Dump the level.dat's NBT data. This is primarily useful for developers.
@@ -990,16 +991,50 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if isinstance(obj, nbt.TAG_Compound):
 			for name, value in obj.items():
 				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
-					print "    " * depth, name
-					self.dump(value, depth+1)
+					#print str.lstrip("%s.%s" % (path, name), '.')
+					self.dump(value, '%s.%s' % (path, name))
 				else:
-					print "    " * depth, name, value.value
+					print str.lstrip("%s.%s: %s" % (path, name, value.value), '.')
 		if isinstance(obj, nbt.TAG_List):
 			for value in obj:
 				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
-					self.dump(value, depth+1)
+					self.dump(value, path)
 				else:
-					print "    " * depth, value.value
+					print str.lstrip("%s: %s" % (path, value.value), '.')
+
+	def nbtset(self, path, value):
+		"""
+		Set raw NBT values.
+		Directly set the value of NBT values. This is mostly useful for
+		developers. You cannot currently modify lists of NBT values (the
+		inventory, player position, etc).
+
+		WARNING: This may corrupt your save!
+
+		Examples:
+
+		Turn on thundering:
+		> nbtset Data.thundering 1
+
+		Reset your health:
+		> nbtset Data.Player.Health 20
+
+		Set the ammount of air you've got left:
+		> nbtset Data.Player.Air 300
+		"""
+		self._checkloaded()
+
+		try:
+			obj = self.level
+			for p in path.split('.'):
+				obj = obj[p]
+		except KeyError, e:
+			raise MCPlayerEditError(17, "No such NBT tag: '%s'" % path)
+
+		try:
+			obj.value = value
+		except ValueError, e:
+			raise MCPlayerEditError(18, "'%s' is not a valid value for NBT tag '%s'" % (value, path))
 
 	def rain(self, onoff, time=60):
 		"""
