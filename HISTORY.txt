@@ -1,7 +1,12 @@
 v0.14 (22 Apr 2011)
  - Added a 'thunder' command with which you can influence thunderstorms.
- - Renamed the 'dump' command to 'nbtdump'.
  - Added an 'nbtset' command that lets you manually set values for NBT tags in the save file. See 'nbtdump' for a list of available NBT tags.
+ - Added an 'unsafe' command that turns on/off safe mode.
+ - Renamed the 'dump' command to 'nbtdump'.
+ - Renamed the 'Spade' items to 'Shovel'.
+ - Renamed the 'Redstone torch On' to 'Redstone torch'.
+ - Implemented Safe Mode. In safe mode MCPlayerEdit will prevent you from doing things which are not allowed in Minecraft or might damage your save file. Turn off with 'safemode off'.
+ - The 'give' command now accepts counts higher than 64 (or the maximum stack size for the item in question), in which case it will add multiple stacks to the inventory.
 
 v0.13 (20 Apr 2011)
  - Added a command 'rain' with which you can influence the weather.

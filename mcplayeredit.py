@@ -9,13 +9,16 @@
 # - MacOSX windows support (tab completion)
 # - give/kit will put items in armor slots even if they're not supposed to go
 #   there.
-# - Safe mode: Users can't do things using MCPlayerEdit which they can't do in the game:
-#   * Add more than 1 tool/etc in a slot.
+# - Safe mode
 #   * Add non-armor in an armor slot.
-#   * Give coloured cloth and other invalid items.
 # - Watch level.dat for changes?
 # - Detect lock? (Is this even possible?)
-# - Confirm method.
+# - Generic 'Confirm' method.
+# - Add commandline parameters:(optparse)
+#   * -w, --world  World to open
+#   * -s (ON/OFF), --safemode (ON/OFF)  Save mode on or off
+#   * Silent mode
+#   * Batch mode? (read commands from stdin)
 
 __NAME__    = 'MCPlayerEdit'
 __AUTHOR__  = "Ferry Boender"
@@ -46,250 +49,256 @@ Type 'help' for a list of commands, 'help <command>' for detailed help.
 'items' gives you a list of all available items.
 """ % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
 
+# Item data: ['id', 'damage', 'name', 'max_stack']
+# Some items have the same ID (colored wool). They use the damage id to
+# destinguish themselves from eachother. The max_stack determines the maximum
+# number of the item that can be stacked in a single slot.  If the
+# max_stack is 0, the item is unsafe to add to the inventory (cannot
+# normally be obtained in the game).
 itemsdb_data = [
-	[0,    0, 'Air'],
-	[1,    0, 'Stone'],
-	[2,    0, 'Grass'],
-	[3,    0, 'Dirt'],
-	[4,    0, 'Cobblestone'],
-	[5,    0, 'Wood'],
-	[6,    0, 'Sapling'],
-	[6,    1, 'Spruce Sapling'],
-	[6,    2, 'Birch Sapling'],
-	[7,    0, 'Adminium'],
-	[8,    0, 'Water'],
-	[9,    0, 'Stationary water'],
-	[10,   0, 'Lava'],
-	[11,   0, 'Stationary lava'],
-	[12,   0, 'Sand'],
-	[13,   0, 'Gravel'],
-	[14,   0, 'Gold ore'],
-	[15,   0, 'Iron ore'],
-	[16,   0, 'Coal ore'],
-	[17,   0, 'Log'],
-	[17,   1, 'Redwood'],
-	[17,   2, 'Birch'],
-	[18,   0, 'Leaves'],
-	[19,   0, 'Sponge'],
-	[20,   0, 'Glass'],
-	[21,   0, 'Lapis Lazuli Ore'],
-	[22,   0, 'Lapis Lazuli Block'],
-	[23,   0, 'Dispenser'],
-	[24,   0, 'Sandstone'],
-	[25,   0, 'Note Block'],
-	[27,   0, 'Powered Rail'],
-	[28,   0, 'Detector Rail'],
-	#[26,   0, 'Aqua green Cloth'],
-	#[27,   0, 'Cyan Cloth'],
-	#[28,   0, 'Blue Cloth'],
-	#[29,   0, 'Purple Cloth'],
-	#[30,   0, 'Indigo Cloth'],
-	#[31,   0, 'Violet Cloth'],
-	#[32,   0, 'Magenta Cloth'],
-	#[33,   0, 'Pink Cloth'],
-	#[34,   0, 'Black Cloth'],
-	#[35,   0, Gray Cloth / White Cloth'],
-	[35,   0, 'White Wool'],
-	[35,   1, 'Orange Wool'],
-	[35,   2, 'Magenta Wool'],
-	[35,   3, 'Light Blue Wool'],
-	[35,   4, 'Yellow Wool'],
-	[35,   5, 'Light Green Wool'],
-	[35,   6, 'Pink Wool'],
-	[35,   7, 'Gray Wool'],
-	[35,   8, 'Light Gray Wool'],
-	[35,   9, 'Cyan Wool'],
-	[35,  10, 'Purple Wool'],
-	[35,  11, 'Blue Wool'],
-	[35,  12, 'Brown Wool'],
-	[35,  13, 'Dark Green Wool'],
-	[35,  14, 'Red Wool'],
-	[35,  15, 'Black Wool'],
-	#[36,   0, 'White Cloth'],
-	[37,   0, 'Yellow flower'],
-	[38,   0, 'Red rose'],
-	[39,   0, 'Brown Mushroom'],
-	[40,   0, 'Red Mushroom'],
-	[41,   0, 'Gold Block'],
-	[42,   0, 'Iron Block'],
-	[43,   0, 'Double Stone Slab'],
-	[43,   1, 'Double Sandstone Slab'],
-	[43,   2, 'Double Wooden Slab'],
-	[43,   3, 'Double Cobblestone Slab'],
-	[44,   0, 'Stone Slab'],
-	[44,   1, 'Sandstone Slab'],
-	[44,   2, 'Wooden Slab'],
-	[44,   3, 'Cobblestone Slab'],
-	[45,   0, 'Brick'],
-	[46,   0, 'TNT'],
-	[47,   0, 'Bookcase'],
-	[48,   0, 'Moss Stone'],
-	[49,   0, 'Obsidian'],
-	[50,   0, 'Torch'],
-	[51,   0, 'Fire'],
-	[52,   0, 'Mob Spawner'],
-	[53,   0, 'Wooden Stairs'],
-	[54,   0, 'Chest'],
-	[55,   0, 'Redstone Wire'],
-	[56,   0, 'Diamond Ore'],
-	[57,   0, 'Diamond Block'],
-	[58,   0, 'Workbench'],
-	[59,   0, 'Crops'],
-	[60,   0, 'Soil'],
-	[61,   0, 'Furnace'],
-	[62,   0, 'Burning Furnace'],
-	[63,   0, 'Sign Post'],
-	[64,   0, 'Wooden Door'],
-	[65,   0, 'Ladder'],
-	[66,   0, 'Rail'],
-	[67,   0, 'Cobblestone Stairs'],
-	[68,   0, 'Wall Sign'],
-	[69,   0, 'Lever'],
-	[70,   0, 'Stone Pressure Plate'],
-	[71,   0, 'Iron Door'],
-	[72,   0, 'Wooden Pressure Plate'],
-	[73,   0, 'Redstone Ore'],
-	[74,   0, 'Glowing Redstone Ore'],
-	[75,   0, 'Redstone torch Off'],
-	[76,   0, 'Redstone torch On'],
-	[77,   0, 'Stone Button'],
-	[78,   0, 'Snow'],
-	[79,   0, 'Ice'],
-	[80,   0, 'Snow Block'],
-	[81,   0, 'Cactus'],
-	[82,   0, 'Clay'],
-	[83,   0, 'Sugar Cane'],
-	[84,   0, 'Jukebox'],
-	[85,   0, 'Fence'],
-	[86,   0, 'Pumpkin'],
-	[87,   0, 'Netherrack'],
-	[88,   0, 'Soul Sand'],
-	[89,   0, 'Glowstone'],
-	[90,   0, 'Portal'],
-	[91,   0, 'Jack-O-Lantern'],
-	[92,   0, 'Cake Block'],
-	[93,   0, 'Redstone Repeater Off'],
-	[94,   0, 'Redstone Repeater On'],
-	[256,  0, 'Iron Spade'],
-	[257,  0, 'Iron Pickaxe'],
-	[258,  0, 'Iron Axe'],
-	[259,  0, 'Flint and Steel'],
-	[260,  0, 'Apple'],
-	[261,  0, 'Bow'],
-	[262,  0, 'Arrow'],
-	[263,  0, 'Coal'],
-	[263,  1, 'Charcoal'],
-	[264,  0, 'Diamond'],
-	[265,  0, 'Iron Ingot'],
-	[266,  0, 'Gold Ingot'],
-	[267,  0, 'Iron Sword'],
-	[268,  0, 'Wooden Sword'],
-	[269,  0, 'Wooden Spade'],
-	[270,  0, 'Wooden Pickaxe'],
-	[271,  0, 'Wooden Axe'],
-	[272,  0, 'Stone Sword'],
-	[273,  0, 'Stone Spade'],
-	[274,  0, 'Stone Pickaxe'],
-	[275,  0, 'Stone Axe'],
-	[276,  0, 'Diamond Sword'],
-	[277,  0, 'Diamond Spade'],
-	[278,  0, 'Diamond Pickaxe'],
-	[279,  0, 'Diamond Axe'],
-	[280,  0, 'Stick'],
-	[281,  0, 'Bowl'],
-	[282,  0, 'Mushroom Soup'],
-	[283,  0, 'Gold Sword'],
-	[284,  0, 'Gold Spade'],
-	[285,  0, 'Gold Pickaxe'],
-	[286,  0, 'Gold Axe'],
-	[287,  0, 'String'],
-	[288,  0, 'Feather'],
-	[289,  0, 'Gunpowder'],
-	[290,  0, 'Wooden Hoe'],
-	[291,  0, 'Stone Hoe'],
-	[292,  0, 'Iron Hoe'],
-	[293,  0, 'Diamond Hoe'],
-	[294,  0, 'Gold Hoe'],
-	[295,  0, 'Seeds'],
-	[296,  0, 'Wheat'],
-	[297,  0, 'Bread'],
-	[298,  0, 'Leather Helmet'],
-	[299,  0, 'Leather Chestplate'],
-	[300,  0, 'Leather Pants'],
-	[301,  0, 'Leather Boots'],
-	[302,  0, 'Chainmail Helmet'],
-	[303,  0, 'Chainmail Chestplate'],
-	[304,  0, 'Chainmail Pants'],
-	[305,  0, 'Chainmail Boots'],
-	[306,  0, 'Iron Helmet'],
-	[307,  0, 'Iron Chestplate'],
-	[308,  0, 'Iron Pants'],
-	[309,  0, 'Iron Boots'],
-	[310,  0, 'Diamond Helmet'],
-	[311,  0, 'Diamond Chestplate'],
-	[312,  0, 'Diamond Pants'],
-	[313,  0, 'Diamond Boots'],
-	[314,  0, 'Gold Helmet'],
-	[315,  0, 'Gold Chestplate'],
-	[316,  0, 'Gold Pants'],
-	[317,  0, 'Gold Boots'],
-	[318,  0, 'Flint'],
-	[319,  0, 'Pork'],
-	[320,  0, 'Grilled Pork'],
-	[321,  0, 'Paintings'],
-	[322,  0, 'Golden apple'],
-	[323,  0, 'Sign'],
-	[324,  0, 'Wooden door'],
-	[325,  0, 'Bucket'],
-	[326,  0, 'Water bucket'],
-	[327,  0, 'Lava bucket'],
-	[328,  0, 'Mine cart'],
-	[329,  0, 'Saddle'],
-	[330,  0, 'Iron door'],
-	[331,  0, 'Redstone'],
-	[332,  0, 'Snowball'],
-	[333,  0, 'Boat'],
-	[334,  0, 'Leather'],
-	[335,  0, 'Milk Bucket'],
-	[336,  0, 'Clay Brick'],
-	[337,  0, 'Clay Balls'],
-	[338,  0, 'Sugar Cane'],
-	[339,  0, 'Paper'],
-	[340,  0, 'Book'],
-	[341,  0, 'Slime Ball'],
-	[342,  0, 'Storage Minecart'],
-	[343,  0, 'Powered Minecart'],
-	[344,  0, 'Egg'],
-	[345,  0, 'Compass'],
-	[346,  0, 'Fishing Rod'],
-	[347,  0, 'Watch'],
-	[348,  0, 'Glowstone Dust'],
-	[349,  0, 'Raw Fish'],
-	[350,  0, 'Cooked Fish'],
-	[351,  0, 'Ink Sack'],
-	[351,  1, 'Rose Red'],
-	[351,  2, 'Cactus Green'],
-	[351,  3, 'Coco Beans'],
-	[351,  4, 'Lapis Lazuli'],
-	[351,  5, 'Purple Dye'],
-	[351,  6, 'Cyan Dye'],
-	[351,  7, 'Light Gray Dye'],
-	[351,  8, 'Gray Dye'],
-	[351,  9, 'Pink Dye'],
-	[351,  10, 'Lime Dye'],
-	[351,  11, 'Dandelion Yellow'],
-	[351,  12, 'Light Blue Dye'],
-	[351,  13, 'Magenta Dye'],
-	[351,  14, 'Orange Dye'],
-	[351,  15, 'Bone Meal'],
-	[352,  0, 'Bone'],
-	[353,  0, 'Sugar'],
-	[354,  0, 'Cake'],
-	[355,  0, 'Bed'],
-	[356,  0, 'Redstone Repeater'],
-	[357,  0, 'Cookie'],
-	[2256, 0, 'Gold Music Disc'],
-	[2257, 0, 'Green Music Disc'],
+	[0,    0, 'Air',                     0],
+	[1,    0, 'Stone',                   64],
+	[2,    0, 'Grass',                   0],
+	[3,    0, 'Dirt',                    64],
+	[4,    0, 'Cobblestone',             64],
+	[5,    0, 'Wood',                    64],
+	[6,    0, 'Sapling',                 64],
+	[6,    1, 'Spruce Sapling',          64],
+	[6,    2, 'Birch Sapling',           64],
+	[7,    0, 'Adminium',                0],
+	[8,    0, 'Water',                   0],
+	[9,    0, 'Stationary water',        0],
+	[10,   0, 'Lava',                    0],
+	[11,   0, 'Stationary lava',         0],
+	[12,   0, 'Sand',                    64],
+	[13,   0, 'Gravel',                  64],
+	[14,   0, 'Gold ore',                0],
+	[15,   0, 'Iron ore',                0],
+	[16,   0, 'Coal ore',                0],
+	[17,   0, 'Log',                     64],
+	[17,   1, 'Redwood',                 64],
+	[17,   2, 'Birch',                   64],
+	[18,   0, 'Leaves',                  0],
+	[19,   0, 'Sponge',                  0],
+	[20,   0, 'Glass',                   64],
+	[21,   0, 'Lapis Lazuli Ore',        0],
+	[22,   0, 'Lapis Lazuli Block',      0],
+	[23,   0, 'Dispenser',               64],
+	[24,   0, 'Sandstone',               64],
+	[25,   0, 'Note Block',              64],
+	[27,   0, 'Powered Rail',            64],
+	[28,   0, 'Detector Rail',           64],
+	#[26,   0, 'Aqua green Cloth',       64],
+	#[27,   0, 'Cyan Cloth',             64],
+	#[28,   0, 'Blue Cloth',             64],
+	#[29,   0, 'Purple Cloth',           64],
+	#[30,   0, 'Indigo Cloth',           64],
+	#[31,   0, 'Violet Cloth',           64],
+	#[32,   0, 'Magenta Cloth',          64],
+	#[33,   0, 'Pink Cloth',             64],
+	#[34,   0, 'Black Cloth',            64],
+	#[35,   0, Gray Cloth / White Cloth',64],
+	[35,   0, 'White Wool',              64],
+	[35,   1, 'Orange Wool',             64],
+	[35,   2, 'Magenta Wool',            64],
+	[35,   3, 'Light Blue Wool',         64],
+	[35,   4, 'Yellow Wool',             64],
+	[35,   5, 'Light Green Wool',        64],
+	[35,   6, 'Pink Wool',               64],
+	[35,   7, 'Gray Wool',               64],
+	[35,   8, 'Light Gray Wool',         64],
+	[35,   9, 'Cyan Wool',               64],
+	[35,  10, 'Purple Wool',             64],
+	[35,  11, 'Blue Wool',               64],
+	[35,  12, 'Brown Wool',              64],
+	[35,  13, 'Dark Green Wool',         64],
+	[35,  14, 'Red Wool',                64],
+	[35,  15, 'Black Wool',              64],
+	#[36,   0, 'White Cloth',            64],
+	[37,   0, 'Yellow flower',           64],
+	[38,   0, 'Red rose',                64],
+	[39,   0, 'Brown Mushroom',          64],
+	[40,   0, 'Red Mushroom',            64],
+	[41,   0, 'Gold Block',              64],
+	[42,   0, 'Iron Block',              64],
+	[43,   0, 'Double Stone Slab',       64],
+	[43,   1, 'Double Sandstone Slab',   64],
+	[43,   2, 'Double Wooden Slab',      64],
+	[43,   3, 'Double Cobblestone Slab', 64],
+	[44,   0, 'Stone Slab',              64],
+	[44,   1, 'Sandstone Slab',          64],
+	[44,   2, 'Wooden Slab',             64],
+	[44,   3, 'Cobblestone Slab',        64],
+	[45,   0, 'Brick',                   64],
+	[46,   0, 'TNT',                     64],
+	[47,   0, 'Bookcase',                64],
+	[48,   0, 'Moss Stone',              64],
+	[49,   0, 'Obsidian',                64],
+	[50,   0, 'Torch',                   64],
+	[51,   0, 'Fire',                    0],
+	[52,   0, 'Mob Spawner',             0],
+	[53,   0, 'Wooden Stairs',           64],
+	[54,   0, 'Chest',                   64],
+	[55,   0, 'Redstone Wire',           64],
+	[56,   0, 'Diamond Ore',             0],
+	[57,   0, 'Diamond Block',           64],
+	[58,   0, 'Workbench',               64],
+	[59,   0, 'Crops',                   0],
+	[60,   0, 'Farmland',                0],
+	[61,   0, 'Furnace',                 64],
+	[62,   0, 'Burning Furnace',         0],
+	[63,   0, 'Sign Post',               0],
+	[64,   0, 'Wooden Door',             1],
+	[65,   0, 'Ladder',                  64],
+	[66,   0, 'Rail',                    64],
+	[67,   0, 'Cobblestone Stairs',      64],
+	[68,   0, 'Wall Sign',               0],
+	[69,   0, 'Lever',                   64],
+	[70,   0, 'Stone Pressure Plate',    64],
+	[71,   0, 'Iron Door',               0],
+	[72,   0, 'Wooden Pressure Plate',   64],
+	[73,   0, 'Redstone Ore',            0],
+	[74,   0, 'Glowing Redstone Ore',    0],
+	[75,   0, 'Redstone torch Off',      0],
+	[76,   0, 'Redstone torch',          64],
+	[77,   0, 'Stone Button',            64],
+	[78,   0, 'Snow',                    0],
+	[79,   0, 'Ice',                     0],
+	[80,   0, 'Snow Block',              64],
+	[81,   0, 'Cactus',                  64],
+	[82,   0, 'Clay',                    64],
+	[83,   0, 'Sugar Cane',              64],
+	[84,   0, 'Jukebox',                 64],
+	[85,   0, 'Fence',                   64],
+	[86,   0, 'Pumpkin',                 64],
+	[87,   0, 'Netherrack',              64],
+	[88,   0, 'Soul Sand',               64],
+	[89,   0, 'Glowstone',               64],
+	[90,   0, 'Portal',                  0],
+	[91,   0, 'Jack-O-Lantern',          64],
+	[92,   0, 'Cake Block',              0],
+	[93,   0, 'Redstone Repeater Off',   0],
+	[94,   0, 'Redstone Repeater On',    0],
+	[256,  0, 'Iron Shovel',             1],
+	[257,  0, 'Iron Pickaxe',            1],
+	[258,  0, 'Iron Axe',                1],
+	[259,  0, 'Flint and Steel',         1],
+	[260,  0, 'Apple',                   1],
+	[261,  0, 'Bow',                     1],
+	[262,  0, 'Arrow',                   64],
+	[263,  0, 'Coal',                    64],
+	[263,  1, 'Charcoal',                64],
+	[264,  0, 'Diamond',                 64],
+	[265,  0, 'Iron Ingot',              64],
+	[266,  0, 'Gold Ingot',              64],
+	[267,  0, 'Iron Sword',              64],
+	[268,  0, 'Wooden Sword',            1],
+	[269,  0, 'Wooden Shovel',           1],
+	[270,  0, 'Wooden Pickaxe',          1],
+	[271,  0, 'Wooden Axe',              1],
+	[272,  0, 'Stone Sword',             1],
+	[273,  0, 'Stone Shovel',            1],
+	[274,  0, 'Stone Pickaxe',           1],
+	[275,  0, 'Stone Axe',               1],
+	[276,  0, 'Diamond Sword',           1],
+	[277,  0, 'Diamond Shovel',          1],
+	[278,  0, 'Diamond Pickaxe',         1],
+	[279,  0, 'Diamond Axe',             1],
+	[280,  0, 'Stick',                   64],
+	[281,  0, 'Bowl',                    64],
+	[282,  0, 'Mushroom Soup',           1],
+	[283,  0, 'Gold Sword',              1],
+	[284,  0, 'Gold Shovel',             1],
+	[285,  0, 'Gold Pickaxe',            1],
+	[286,  0, 'Gold Axe',                1],
+	[287,  0, 'String',                  64],
+	[288,  0, 'Feather',                 64],
+	[289,  0, 'Gunpowder',               64],
+	[290,  0, 'Wooden Hoe',              1],
+	[291,  0, 'Stone Hoe',               1],
+	[292,  0, 'Iron Hoe',                1],
+	[293,  0, 'Diamond Hoe',             1],
+	[294,  0, 'Gold Hoe',                1],
+	[295,  0, 'Seeds',                   64],
+	[296,  0, 'Wheat',                   64],
+	[297,  0, 'Bread',                   1],
+	[298,  0, 'Leather Helmet',          1],
+	[299,  0, 'Leather Chestplate',      1],
+	[300,  0, 'Leather Pants',           1],
+	[301,  0, 'Leather Boots',           1],
+	[302,  0, 'Chainmail Helmet',        1],
+	[303,  0, 'Chainmail Chestplate',    1],
+	[304,  0, 'Chainmail Pants',         1],
+	[305,  0, 'Chainmail Boots',         1],
+	[306,  0, 'Iron Helmet',             1],
+	[307,  0, 'Iron Chestplate',         1],
+	[308,  0, 'Iron Pants',              1],
+	[309,  0, 'Iron Boots',              1],
+	[310,  0, 'Diamond Helmet',          1],
+	[311,  0, 'Diamond Chestplate',      1],
+	[312,  0, 'Diamond Pants',           1],
+	[313,  0, 'Diamond Boots',           1],
+	[314,  0, 'Gold Helmet',             1],
+	[315,  0, 'Gold Chestplate',         1],
+	[316,  0, 'Gold Pants',              1],
+	[317,  0, 'Gold Boots',              1],
+	[318,  0, 'Flint',                   64],
+	[319,  0, 'Pork',                    1],
+	[320,  0, 'Grilled Pork',            1],
+	[321,  0, 'Painting',                64],
+	[322,  0, 'Golden apple',            1],
+	[323,  0, 'Sign',                    1],
+	[324,  0, 'Wooden door',             1],
+	[325,  0, 'Bucket',                  1],
+	[326,  0, 'Water bucket',            0],
+	[327,  0, 'Lava bucket',             0],
+	[328,  0, 'Mine cart',               1],
+	[329,  0, 'Saddle',                  1],
+	[330,  0, 'Iron door',               1],
+	[331,  0, 'Redstone',                64],
+	[332,  0, 'Snowball',                16],
+	[333,  0, 'Boat',                    1],
+	[334,  0, 'Leather',                 64],
+	[335,  0, 'Milk Bucket',             0],
+	[336,  0, 'Clay Brick',              64],
+	[337,  0, 'Clay',                    64],
+	[338,  0, 'Sugar Cane',              64],
+	[339,  0, 'Paper',                   64],
+	[340,  0, 'Book',                    64],
+	[341,  0, 'Slime Ball',              64],
+	[342,  0, 'Storage Minecart',        1],
+	[343,  0, 'Powered Minecart',        1],
+	[344,  0, 'Egg',                     16],
+	[345,  0, 'Compass',                 64],
+	[346,  0, 'Fishing Rod',             64],
+	[347,  0, 'Watch',                   64],
+	[348,  0, 'Glowstone Dust',          64],
+	[349,  0, 'Raw Fish',                64],
+	[350,  0, 'Cooked Fish',             1],
+	[351,  0, 'Ink Sack',                64],
+	[351,  1, 'Rose Red',                64],
+	[351,  2, 'Cactus Green',            64],
+	[351,  3, 'Coco Beans',              64],
+	[351,  4, 'Lapis Lazuli',            64],
+	[351,  5, 'Purple Dye',              64],
+	[351,  6, 'Cyan Dye',                64],
+	[351,  7, 'Light Gray Dye',          64],
+	[351,  8, 'Gray Dye',                64],
+	[351,  9, 'Pink Dye',                64],
+	[351,  10, 'Lime Dye',               64],
+	[351,  11, 'Dandelion Yellow',       64],
+	[351,  12, 'Light Blue Dye',         64],
+	[351,  13, 'Magenta Dye',            64],
+	[351,  14, 'Orange Dye',             64],
+	[351,  15, 'Bone Meal',              64],
+	[352,  0, 'Bone',                    64],
+	[353,  0, 'Sugar',                   64],
+	[354,  0, 'Cake',                    1],
+	[355,  0, 'Bed',                     1],
+	[356,  0, 'Redstone Repeater',       64],
+	[357,  0, 'Cookie',                  8],
+	[2256, 0, 'Gold Music Disc',         1],
+	[2257, 0, 'Green Music Disc',        1],
 ]
 
 invmap = \
@@ -319,13 +328,15 @@ class ItemDB(sdb.SDB):
 			item = itemdb.get(item_id)
 		return(item)
 
-itemdb = ItemDB(data= itemsdb_data, cols=['id', 'damage', 'name'], id='id')
+itemdb = ItemDB(data= itemsdb_data, cols=['id', 'damage', 'name', 'max_stack'], id='id')
 
 class MCPlayerEditError(Exception):
 	pass
 
 class MCPlayerEdit(icmd.ICmdBase):
 	def __init__(self, helptext_prefix = '', helptext_suffix = '', batch=False):
+		self.safe_mode = True
+
 		# Load kits
 		self.kitpath = os.path.join(confpath, 'kits.dat')
 		if not os.path.exists(self.kitpath):
@@ -383,11 +394,54 @@ class MCPlayerEdit(icmd.ICmdBase):
 		else:
 			return(True) # Perform operation, user has no modifications
 
+	def _checkunsafe(self):
+		"""
+		Check if MCPlayerEdit is in safe mode. If so, it raises an error. This
+		should be called by commands which are not safe to use.
+		"""
+		if self.safe_mode:
+			raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and this command is not safe to use in Safe mode. See 'help safemode'")
+
 	def _getinventory(self):
 		inventory = [None] * 104
 		for slot in self.level['Data']['Player']['Inventory']:
 			inventory[slot['Slot'].value] = slot
 		return(inventory)
+
+	def _invadd(self, items):
+		"""
+		Add ITEMS to the users inventory. ITEMS is a list where each member is
+		a list of two values: (count, itemid). Raises MCPlayerEditError if not
+		enough slots are available. Returns a list of slots in which the items
+		were added.
+		"""
+		inventory = self._getinventory()
+
+		# Check available slots
+		cnt = 0
+		for slot in invmap:
+			if not inventory[slot[0]]:
+				cnt += 1
+		if cnt < len(items):
+			raise MCPlayerEditError(6, "Not enough empty slots found. %i needed" % (len(items)))
+
+		i = 0
+		slots = [] # int ids of slots where items where assigned
+		for slot in invmap:
+			item = items[i]
+			if not inventory[slot[0]]:
+				# Found an empty slot. Add the next item 
+				newitem = nbt.TAG_Compound()
+				newitem['id'] = nbt.TAG_Short(item[1])
+				newitem['Damage'] = nbt.TAG_Short(item[2])
+				newitem['Count'] = nbt.TAG_Byte(item[0])
+				newitem['Slot'] = nbt.TAG_Byte(slot[0])
+				self.level['Data']['Player']['Inventory'].append(newitem)
+				slots.append(slot[0])
+				i += 1
+			if i == len(items):
+				break
+		return(slots)
 
 	def load(self, worldname = None, *args):
 		"""
@@ -513,7 +567,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		--entire inventory--
 		> list quick
 		slot   0 (quick inventory):  1 x Stone Pickaxe
-		slot   1 (quick inventory):  1 x Stone Spade
+		slot   1 (quick inventory):  1 x Stone Shovel
 		slot   2 (quick inventory): 42 x Dirt
 		...
 		"""
@@ -539,47 +593,54 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		Add items to the players inventory
 		Usage: give [count] <item>
-		Tries to add COUNT times ITEM to the player inventory. COUNT must be in
-		the range 1-64. If no count is given, gives one item. ITEM may be an
-		item ID (see the `items` command) or the name of an item. Fails if
-		there are no empty slots in the players inventory.
+		Tries to add COUNT times ITEM to the player inventory. If no count is
+		given, gives the maximum stack size for the item. ITEM may be an item
+		ID (see the `items` command) or the name of an item. Fails if there are
+		not enough empty slots in the players inventory.
 
 		Sometimes multiple items have the same ID. If you select such an item
 		by id, you will be given an additional option menu from which you can
 		chose which item you want.
 
-		You CAN stack unstackable items (64 x Diamond Pickaxe), and it will
-		work, but it might corrupt your game. NO GAME-LOGIC IS CHECKED WHEN
-		GIVING ITEMS! In case of corruption, see README.txt.
+		If Safe mode is off (see 'help safemode'), you CAN stack unstackable
+		items (64 x Diamond Pickaxe, 256 x Log), and it will work, but it might
+		corrupt your game. In case of corruption, see README.txt.
 
 		Examples:
-		> give 64 TNT
-		Added 64 x TNT in slot 13
+		> give TNT
+		Added 64 x TNT in slot 0
+
+		> give 105 dirt
+		Added 64 x Dirt in slot 1
+		Added 41 x Dirt in slot 2
+
 		> give 1 diamond pickaxe
-		Added 1 x Diamond Pickaxe in slot 14
-		> give 64 2256
-		Added 64 x Gold Record in slot 15
+		Added 1 x Diamond Pickaxe in slot 3
+
+		> give 64 38
+		Added 64 x Red rose in slot 4
 		"""
 		self._checkloaded()
 
-		item = ' '.join(args)
-		if not item:
+		if not args:
 			item = count
-			count = 1
+		else:
+			item  = ' '.join(args)
 
-		# Validate some input
 		try:
 			count = int(count)
 		except ValueError:
 			item = ' '.join((count,) + args)
-			count = 1
-		if count < 1 or count > 64:
-			raise MCPlayerEditError(5, 'Invalid count number. Must be in range 1 - 64')
+			count = None
+		except TypeError:
+			# if count == None the count will later on become max_stack size.
+			count = None
 
 		# Find out which item the user is trying to add
 		itemid = None
 		add_item = None
 		try:
+			# Try to get the item by numeric ID.
 			itemid = int(item)
 			items = itemdb.select(lambda row: row['id'] == itemid)
 
@@ -597,6 +658,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 			else:
 				add_item = itemdb.getx(id=itemid, damage=0)
 		except ValueError:
+			# Try to get the item by name
 			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
 			if rows:
 				add_item = rows[0]
@@ -604,45 +666,31 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if not add_item:
 			raise MCPlayerEditError(6, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
 
-		assignedslots = self._invadd([(count, add_item['id'], add_item['damage'])])
-		self._output("Added %i x %s in slot %i" % (count, add_item['name'], assignedslots[0]))
+		# If count not given, set to max_stack size.
+		if not count:
+			count = add_item['max_stack']
+
+		# Check if the item is safe to add.
+		if self.safe_mode:
+			if add_item['max_stack'] < 1:
+				raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and this item is not safe to add. See 'help safemode'.")
+
+		# Determine stacks to add
+		if self.safe_mode:
+			# Divide the count in appropriately sized (max_stack size) stacks.
+			stacks = [[add_item['max_stack'], add_item['id'], add_item['damage']]] * (count / add_item['max_stack'])
+			if count % add_item['max_stack'] > 0:
+				stacks.append([count % add_item['max_stack'], add_item['id'], add_item['damage']])
+		else:
+			# Safe mode off, just add the count the user wants.
+			stacks = [[count, add_item['id'], add_item['damage']], ]
+
+		# Add stacks to the inventory.
+		for stack in stacks:
+			assignedslots = self._invadd((stack, ))
+			self._output("Added %i x %s in slot %i" % (stack[0], add_item['name'], assignedslots[0]))
 
 		self.modified = True
-
-	def _invadd(self, items):
-		"""
-		Add ITEMS to the users inventory. ITEMS is a list where each member is
-		a list of two values: (count, itemid). Raises MCPlayerEditError if not
-		enough slots are available. Returns a list of slots in which the items
-		were added.
-		"""
-		inventory = self._getinventory()
-
-		# Check available slots
-		cnt = 0
-		for slot in invmap:
-			if not inventory[slot[0]]:
-				cnt += 1
-		if cnt < len(items):
-			raise MCPlayerEditError(6, "Not enough empty slots found. %i needed" % (len(items)))
-
-		i = 0
-		slots = [] # int ids of slots where items where assigned
-		for slot in invmap:
-			item = items[i]
-			if not inventory[slot[0]]:
-				# Found an empty slot. Add the next item 
-				newitem = nbt.TAG_Compound()
-				newitem['id'] = nbt.TAG_Short(item[1])
-				newitem['Damage'] = nbt.TAG_Short(item[2])
-				newitem['Count'] = nbt.TAG_Byte(item[0])
-				newitem['Slot'] = nbt.TAG_Byte(slot[0])
-				self.level['Data']['Player']['Inventory'].append(newitem)
-				slots.append(slot[0])
-				i += 1
-			if i == len(items):
-				break
-		return(slots)
 
 	def kit(self, kit = None, *args):
 		"""
@@ -707,6 +755,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		names can be used on the `give` command. A SEARCH parameter can be
 		given to limit the items listed to those in which SEARCH occurs.
 
+		Only lists unsafe items if safemode is off (see 'help safemode')
+
 		Examples:
 		> items diamond
 		264: Diamond
@@ -720,9 +770,15 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		if search:
 			search = search.lower()
-			items = itemdb.select(lambda row: search in row['name'].lower(), cmp)
+			if self.safe_mode:
+				items = itemdb.select(lambda row: search in row['name'].lower() and row['max_stack'] > 0, cmp)
+			else:
+				items = itemdb.select(lambda row: search in row['name'].lower(), cmp)
 		else:
-			items = itemdb.select()
+			if self.safe_mode:
+				items = itemdb.select(lambda row: row['max_stack'] > 0)
+			else:
+				items = itemdb.select()
 
 		for item in items:
 			print '%5i: %s' % (item['id'], item['name'])
@@ -915,6 +971,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		to die!
 		"""
 		self._checkloaded()
+		self._checkunsafe()
 
 		try:
 			dimension=[k for (k,v) in dimensions.items() if v.lower()==dimension.lower()][0]
@@ -1023,6 +1080,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		> nbtset Data.Player.Air 300
 		"""
 		self._checkloaded()
+		self._checkunsafe()
 
 		try:
 			obj = self.level
@@ -1038,17 +1096,18 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 	def rain(self, onoff, time=60):
 		"""
-		Turn rain/snow on/off (after certain time)
+		Turn rain/snow on/off (for a duration)
 		Turn rain (snow in some biomes) on or off. Optionally specify a time
 		(in seconds) for the rain/snow to last or how long it should stay off.
 		The default is 60 seconds.
 
 		Examples:
 
-		Make it rain for an hour (real time, not game time)
+		Make it rain for an minute (real time, not game time)
 		> rain on 60
 		It will rain/snow for 60 seconds (real time)
 
+		Make sure it doesn't rain for an hour (real time, not game time)
 		> rain off 3600
 		It will not rain/snow for 3600 seconds (real time)
 
@@ -1074,7 +1133,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 	def thunder(self, onoff, time=60):
 		"""
-		Turn thunder on/off (after certain time)
+		Turn thunder on/off (for a duration)
 		Turn thunder on or off. It needs to be raining for this to work (see
 		'rain' command). Optionally specify a time (in seconds) for the
 		thunderstorm to last or how long it should stay off.
@@ -1082,11 +1141,12 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		Examples:
 
-		Make it thunder for an hour (real time, not game time)
+		Make it thunder for an minute (real time, not game time)
 		> thunder on 60
 		It will thunder for 60 seconds (real time)
 
-		> rain off 3600
+		Make sure it doesn't thunder for an hour (real time, not game time)
+		> thunder off 3600
 		It will not thunder for 3600 seconds (real time)
 
 		"""
@@ -1108,6 +1168,36 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self.level['Data']['thunderTime'].value = time * 20
 
 		self._output("It will %sthunder for %i seconds (real time)" % (['not ', ''][onoff], time))
+
+	def safemode(self, onoff):
+		"""
+		Turn on/off safe mode
+		This command turns on or off safe mode. In safe mode MCPlayerEdit will
+		prevent you from doing things which are not allowed in Minecraft or
+		might damage your save file. This includes:
+
+		- adding items which can not normally be obtained in the game.
+		- warping yourself to a random location (as it may warp you into rock).
+		- adding a stack of items bigger than allowed normally.
+
+		Turning safe mode off will allow you to do these things anyway (it's
+		usually safe although you may die in the game)
+
+		Examples:
+
+		Turn off safe mode:
+		> safemode off
+		"""
+
+		if onoff.lower().strip() in ['on', 'yes', '1', 'true']:
+			onoff = True
+		elif onoff.lower().strip() in ['off', 'no', '0', 'false']:
+			onoff = False
+		else:
+			raise MCPlayerEditError(15, "Invalid value for onoff parameter. 'on' or 'off'.")
+
+		self.safe_mode = onoff
+		self._output("Safe mode is now %s" % (['off', 'on'][onoff]))
 
 	def quit(self):
 		"""
