@@ -1,3 +1,8 @@
+v0.14 (22 Apr 2011)
+ - Added a 'thunder' command with which you can influence thunderstorms.
+ - Renamed the 'dump' command to 'nbtdump'.
+ - Added an 'nbtset' command that lets you manually set values for NBT tags in the save file. See 'nbtdump' for a list of available NBT tags.
+
 v0.13 (20 Apr 2011)
  - Added a command 'rain' with which you can influence the weather.
  - Fixed a bug in the 'reload' command where the prompt would change to the
