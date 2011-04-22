@@ -15,7 +15,7 @@ Features include:
 - Bookmark locations and warp back to them (works inter-dimensional).
 - Track your inventory in case of death.
 - Showing the random seed for your world.
-- Controlling the weather (turn on/off rain/snow for a specified time).
+- Controlling the weather (turn on/off rain/snow/thunder for a specified time).
 - Commandline history
 - Commandline tab-completion (only on GNU/Linux, WinXP for now)
 
@@ -150,6 +150,13 @@ Some usage examples:
     New World> give 64 264
     Added 64 x Diamond in slot 3
 
+	New World> give 264
+	Added 64 x Diamond in slot 4
+
+	New World> give 128 Log
+	Added 64 x Log in slot 5
+	Added 64 x Log in slot 6
+
     New World> bookmark Pit of DOOM
     Bookmark 'Pit of DOOM' created.
 
@@ -165,6 +172,10 @@ Some usage examples:
     Saved. Backup created (/home/user/.minecraft/saves/New World/level.dat.bak)
    
     New World> exit
+
+See the 'help' command for more commands. Use 'help <command>' to get specific
+help on a command.
+
 
 Copyright
 ---------
