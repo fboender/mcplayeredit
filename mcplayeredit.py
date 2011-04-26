@@ -88,6 +88,7 @@ itemsdb_data = [
 	[25,   0, 'Note Block',              64],
 	[27,   0, 'Powered Rail',            64],
 	[28,   0, 'Detector Rail',           64],
+	[30,   0, 'Web',                     64],
 	#[26,   0, 'Aqua green Cloth',       64],
 	#[27,   0, 'Cyan Cloth',             64],
 	#[28,   0, 'Blue Cloth',             64],
