@@ -7,6 +7,7 @@ v0.14 (22 Apr 2011)
  - Renamed the 'Redstone torch On' to 'Redstone torch'.
  - Implemented Safe Mode. In safe mode MCPlayerEdit will prevent you from doing things which are not allowed in Minecraft or might damage your save file. Turn off with 'safemode off'.
  - The 'give' command now accepts counts higher than 64 (or the maximum stack size for the item in question), in which case it will add multiple stacks to the inventory.
+ - The 'give' command will now give the maximum stack size when the user does not specify a count.
 
 v0.13 (20 Apr 2011)
  - Added a command 'rain' with which you can influence the weather.
