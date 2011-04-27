@@ -1,7 +1,11 @@
+v0.15 (27 Apr 2011)
+ - Added the otherwise unobtainable 'web' block (Patch by rilian4)
+ - The 'give' command will now give the maximum stack size when the user does not specify a count. (Actually in v0.14, but not mentioned in the changes).
+
 v0.14 (22 Apr 2011)
  - Added a 'thunder' command with which you can influence thunderstorms.
  - Added an 'nbtset' command that lets you manually set values for NBT tags in the save file. See 'nbtdump' for a list of available NBT tags.
- - Added an 'unsafe' command that turns on/off safe mode.
+ - Added an 'safemode' command that turns on/off safe mode.
  - Renamed the 'dump' command to 'nbtdump'.
  - Renamed the 'Spade' items to 'Shovel'.
  - Renamed the 'Redstone torch On' to 'Redstone torch'.

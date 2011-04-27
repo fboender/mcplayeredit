@@ -1,5 +1,5 @@
 
-MCPlayerEdit  v0.14
+MCPlayerEdit  v%%VERSION%%
 
 About
 -----
@@ -66,7 +66,7 @@ GNU/Linux, Unix-compatible:
 
     Unpack the tarball
 
-    $ tar -vxzf mcplayeredit-0.14.tar.gz
+    $ tar -vxzf mcplayeredit-%%VERSION%%.tar.gz
 
     Start MCPlayerEdit
 
@@ -76,7 +76,7 @@ GNU/Linux, Unix-compatible:
 
 Windows (XP, 7):
 
-    - Unpack mcplayeredit-0.14.tar.gz with something like 7zip.
+    - Unpack mcplayeredit-%%VERSION%%.zip with something like 7zip.
     - Navigate to the mcplayeredit folder
     - Double click the 'mcplayeredit.py' file.
 
@@ -84,7 +84,7 @@ MacOS X:
 
     Using Finder
 
-    - Download mcplayeredit-0.1r.tar.gz 
+    - Download mcplayeredit-%%VERSION%%.tar.gz 
     - Open the containing folder
     - Double-click the .tar.gz file to extract it.
     - Open the extracted mcplayeredit-0.11 folder

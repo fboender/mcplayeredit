@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 # Todo:
+# - Adding unsafe items without giving a count won't work (theoretically)
 # - autocomplete needs work
-#   * Values with spaces are not quoted/escaped properly. 
+#   * Values with spaces are not quoted/escaped properly.
 #   * Autocomplete on mac
 #   * completing 'kit' doesn't show 'kitsave'.
 # - autocomplete on world files
@@ -20,9 +21,9 @@
 #   * Silent mode
 #   * Batch mode? (read commands from stdin)
 
-__NAME__    = 'MCPlayerEdit'
-__AUTHOR__  = "Ferry Boender"
-__VERSION__ = (0, 14)
+__NAME__ = 'MCPlayerEdit'
+__AUTHOR__ = "Ferry Boender"
+__VERSION__ = "%%VERSION%%"
 
 import sys
 if sys.version_info[:2] < (2, 6):
@@ -40,14 +41,14 @@ import sdb
 sys.path.pop(0)
 
 welcometext = """
-%s v%i.%i by %s
+%s v%s by %s
 
 Use 'load <worldname>' or 'load <path_to_level.dat>' to load a level.
 Ommit the worldname to get a list of worlds.
 
 Type 'help' for a list of commands, 'help <command>' for detailed help.
 'items' gives you a list of all available items.
-""" % (__NAME__, __VERSION__[0], __VERSION__[1], __AUTHOR__)
+""" % (__NAME__, __VERSION__, __AUTHOR__)
 
 # Item data: ['id', 'damage', 'name', 'max_stack']
 # Some items have the same ID (colored wool). They use the damage id to
@@ -303,7 +304,7 @@ itemsdb_data = [
 ]
 
 invmap = \
-	[(x, 'quick') for x in range(0,9)] + \
+	[(x, 'quick') for x in range(0, 9)] + \
 	[(x, 'normal') for x in range(9, 36)] + \
 	[(x, 'armor') for x in range(100, 104)]
 
