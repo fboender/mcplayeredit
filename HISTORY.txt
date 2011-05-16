@@ -1,3 +1,8 @@
+v0.16 ()
+ - Added the 'loseme' command. It clears the inventory and transports the player in a random direction for a given distance. The objective is to find your way back.
+ - Added the 'restore' command which restores the last created backup of the player data.
+ - Improved the startup message.
+
 v0.15 (27 Apr 2011)
  - Added the otherwise unobtainable 'web' block (Patch by rilian4)
  - The 'give' command will now give the maximum stack size when the user does not specify a count. (Actually in v0.14, but not mentioned in the changes).
