@@ -33,6 +33,8 @@ import os
 import shutil
 import struct
 import time
+import math
+import random
 basepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])))
 sys.path.insert(0, os.path.join(basepath, 'lib'))
 import icmd
@@ -44,7 +46,9 @@ welcometext = """
 %s v%s by %s
 
 Use 'load <worldname>' or 'load <path_to_level.dat>' to load a level.
-Ommit the worldname to get a list of worlds.
+Ommit the worldname to get a list of worlds. Use the 'save' command
+to save changes. You MUST NOT BE PLAYING the world at the same time
+as editing, or your changes will have no effect (quit to the main menu).
 
 Type 'help' for a list of commands, 'help <command>' for detailed help.
 'items' gives you a list of all available items.
@@ -1200,6 +1204,78 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		self.safe_mode = onoff
 		self._output("Safe mode is now %s" % (['off', 'on'][onoff]))
+
+	def loseme(self, distance, keep_inventory=False):
+		"""
+		Randomly transport player.
+		The loseme command will randomly transport the player DISTANCE blocks
+		away in a random direction. The goal is to get back home safely. The
+		inventory will be cleared, unless you specify 'yes' as the
+		`keep_inventory` parameter.
+
+		WARNING: You may end up high in the air or in the middle of rock! The
+		best thing to do is find a position a little above sea-level before
+		losing yourself. (your height in the map will not be changed). If you
+		die immediately after warping, use the 'restore' command to get your
+		restore your last position/health/inventory.
+
+		Examples:
+
+		Randomly transport the player 1000 blocks/meters away:
+		> loseme 1000
+
+		Randomly transport the player 200 blocks without losing inventory:
+		> loseme 200 yes
+		"""
+		self._checkloaded()
+
+		try:
+			distance = int(distance)
+		except ValueError:
+			raise MCPlayerEditError(20, "Invalid value for distance: %s" % (distance))
+
+		if not isinstance(keep_inventory, bool):
+			if keep_inventory.lower().strip() in ['on', 'yes', '1', 'true']:
+				keep_inventory = True
+			elif keep_inventory.lower().strip() in ['off', 'no', '0', 'false']:
+				keep_inventory = False
+			else:
+				raise MCPlayerEditError(15, "Invalid value for keep_inventory parameter. 'yes' or 'no'.")
+
+		cx = self.level['Data']['Player']['Pos'][0].value
+		cy = self.level['Data']['Player']['Pos'][1].value
+		cz = self.level['Data']['Player']['Pos'][2].value
+
+		nx = cx + distance * math.sin(random.randint(0, 360) * math.pi / 180)
+		nz = cz + distance * -math.cos(random.randint(0, 360) * math.pi / 180)
+
+		self.level['Data']['Player']['Pos'][0].value = nx
+		self.level['Data']['Player']['Pos'][2].value = nz
+
+		if not keep_inventory:
+			inventory = self.level['Data']['Player']['Inventory']
+			# Clear entire inventory. NBT does not support slice assignment, so
+			# we need a while loop.
+			while inventory:
+				inventory.pop()
+
+		self.modified = True
+		self._output('You are now lost. Good luck on your journey home')
+
+	def restore(self):
+		"""
+		Restore the last backup of the player data.
+		MCPlayerEdit automatically creates a backup of the player data
+		(level.dat) whenever you save. This command restores the last backup.
+		"""
+		self._checkloaded()
+
+		if not self._checkmodified():
+			return(False)
+
+		shutil.copy(self.filename + ".bak", self.filename)
+		self.reload()
+
 
 	def quit(self):
 		"""
