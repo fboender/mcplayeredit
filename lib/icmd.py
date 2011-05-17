@@ -43,6 +43,7 @@ NOTES:
 import sys
 import os
 import inspect
+import re
 import logging
 
 # Try to load the clusterfuck that is readline. THANKS GNU!
@@ -232,13 +233,26 @@ class ICmd(object):
 		"""
 		Ask the user for a single line of input and run that command. Returns
 		the returned result of the command callable (i.e. the return value of
-		the function in rootclass).
+		the function in rootclass). Multiple commands may be given by
+		delimiting them with a semi-colon. In this case, a list of outputs is
+		returned.
 		"""
-		input = raw_input(self.prompt).split()
-		if input:
-			cmd = input.pop(0)
-			params = input
-			return(self.dispatch(cmd, params))
+		inputline = raw_input(self.prompt)
+		output = []
+		if inputline:
+			cmdlines = inputline.split(';') # Allow for multiple commands on one line, delimited with ';'
+			for cmdline in cmdlines:
+				parts = cmdline.split()
+				cmd = parts.pop(0)
+				params = parts
+				output.append(self.dispatch(cmd, params))
+			# Backwards compatible. If multiple commands where given (delimited
+			# with ';'), return a list of return values from each call.
+			# Otherwise, return just one return value.
+			if len(output) == 1:
+				return(output[0])
+			else:
+				return(output)
 		else:
 			return(False)
 
