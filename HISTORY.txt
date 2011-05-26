@@ -1,8 +1,15 @@
-v0.16 ()
+v0.16 (25 May 2011)
+ - Added trapdoor inveotory item.
+ - Added map inventory item.
+ - Added dead desert shrub (unsafe) inventory item. Can only be placed on sand blocks.
+ - Added dead grass shrub (unsafe) inventory item. Can only be placed on grass blocks.
+ - Added locked chests (automatically disappear when placed after random time).
+ - Fishing rods can no longer be stacked in safe mode.
  - Added the 'loseme' command. It clears the inventory and transports the player in a random direction for a given distance. The objective is to find your way back.
- - Added the 'restore' command which restores the last created backup of the player data.
+ - Added the 'restore' command which restores the last (automatic) created backup of the player data.
  - Improved the startup message.
  - Allow for multiple commands on a single line, separated by a semi-colon. Example: > load World1; give 1 diamond pickaxe; save; quit
+ ! It does not seem to be possible to add Tall Grass inventory items, even as unsafe items. :(
 
 v0.15 (27 Apr 2011)
  - Added the otherwise unobtainable 'web' block (Patch by rilian4)
