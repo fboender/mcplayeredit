@@ -1,26 +1,5 @@
 #!/usr/bin/python
 
-# Todo:
-# - Adding unsafe items without giving a count won't work (theoretically)
-# - autocomplete needs work
-#   * Values with spaces are not quoted/escaped properly.
-#   * Autocomplete on mac
-#   * completing 'kit' doesn't show 'kitsave'.
-# - autocomplete on world files
-# - MacOSX windows support (tab completion)
-# - give/kit will put items in armor slots even if they're not supposed to go
-#   there.
-# - Safe mode
-#   * Add non-armor in an armor slot.
-# - Watch level.dat for changes?
-# - Detect lock? (Is this even possible?)
-# - Generic 'Confirm' method.
-# - Add commandline parameters:(optparse)
-#   * -w, --world  World to open
-#   * -s (ON/OFF), --safemode (ON/OFF)  Save mode on or off
-#   * Silent mode
-#   * Batch mode? (read commands from stdin)
-
 __NAME__ = 'MCPlayerEdit'
 __AUTHOR__ = "Ferry Boender"
 __VERSION__ = "%%VERSION%%"

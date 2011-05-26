@@ -1,0 +1,53 @@
+This is a list of things which still need work in MCPlayerEdit.
+
+- Split Unsafe and MaxStack size:
+
+	Testing> give Dead Shrub
+	Added 0 x Dead Shrub in slot 16
+
+  Should give max stack instead.
+
+- The 'give' command should give the max stack size if no stack size is
+  specified. This doesn't seem work when the user specified a numerical id:
+
+	Testing> give 1
+	Added 1 x Stone in slot 5
+
+  This should have given 64 Stone. Perhaps MCPlayerEdit interprets '1' as the
+  count, not the item id.
+
+- Error on save when stack size > 127
+
+	Testing> give 128 diamond shovel
+	Added 128 x Diamond Shovel in slot 0
+	Testing> save
+	/home/todsah/Development/mcplayeredit/lib/nbt.py:80: DeprecationWarning: 'b' format requires -128 <= number <= 127
+	buf.write(struct.pack(self.fmt, self.value))
+	Saved. Backup created (/home/todsah/.minecraft/saves/Testing/level.dat.bak)
+
+- Fix %%VERSION%% replacement on release buildrule.
+
+- autocomplete needs work
+  * Values with spaces are not quoted/escaped properly.
+  * Autocomplete on mac
+  * completing 'kit' doesn't show 'kitsave'.
+
+- autocomplete on world files
+
+- give/kit will put items in armor slots even if they're not supposed to go
+  there. Safemode should allow the user to do this though.
+
+- Watch level.dat for changes? Is this possible? I think not.
+
+- Detect lock to see if the player is currently playing the world, and tell
+  him/her to quit before making changes. Automatically reload if possible. Is
+  this possible? I think not.
+
+- Generic 'Confirm' method.
+
+- Add commandline parameters:(optparse)
+  * -w, --world  World to open
+  * -s (ON/OFF), --safemode (ON/OFF)  Save mode on or off
+  * Silent mode
+  * Batch mode? (read commands from stdin)
+
