@@ -1,5 +1,5 @@
 v0.16 (25 May 2011)
- - Added trapdoor inveotory item.
+ - Added trapdoor inventory item.
  - Added map inventory item.
  - Added dead desert shrub (unsafe) inventory item. Can only be placed on sand blocks.
  - Added dead grass shrub (unsafe) inventory item. Can only be placed on grass blocks.
