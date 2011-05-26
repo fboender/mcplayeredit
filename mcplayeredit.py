@@ -95,7 +95,6 @@ itemsdb_data = [
 	[28,   0, 'Detector Rail',           64],
 	[30,   0, 'Web',                     64],
 	[31,   0, 'Dead Grass Shrub',        0],
-	[31,   1, 'FOO',        1],
 	[32,   0, 'Dead Desert Shrub',       0],
 	#[26,   0, 'Aqua green Cloth',       64],
 	#[27,   0, 'Cyan Cloth',             64],
