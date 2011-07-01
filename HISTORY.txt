@@ -1,3 +1,6 @@
+v
+ - Lava and Water buckets are now available in safe-mode.
+
 v0.16 (25 May 2011)
  - Added trapdoor inventory item.
  - Added map inventory item.
