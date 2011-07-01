@@ -1,5 +1,7 @@
-v
+v0.17 (01 July 2011)
  - Lava and Water buckets are now available in safe-mode.
+ - Added Pistons, Sticky Pistons and Shears.
+ - Fixed a bug in the nbtdump command.
 
 v0.16 (25 May 2011)
  - Added trapdoor inventory item.

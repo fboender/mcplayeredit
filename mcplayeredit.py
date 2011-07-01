@@ -72,9 +72,11 @@ itemsdb_data = [
 	[25,   0, 'Note Block',              64],
 	[27,   0, 'Powered Rail',            64],
 	[28,   0, 'Detector Rail',           64],
+	[29,   0, 'Sticky Piston',           64],
 	[30,   0, 'Web',                     64],
 	[31,   0, 'Dead Grass Shrub',        0],
 	[32,   0, 'Dead Desert Shrub',       0],
+	[33,   0, 'Piston',                  64],
 	#[26,   0, 'Aqua green Cloth',       64],
 	#[27,   0, 'Cyan Cloth',             64],
 	#[28,   0, 'Blue Cloth',             64],
@@ -287,6 +289,7 @@ itemsdb_data = [
 	[356,  0, 'Redstone Repeater',       64],
 	[357,  0, 'Cookie',                  8],
 	[358,  0, 'Map',                     1],
+	[359,  0, 'Shears',                  1],
 	[2256, 0, 'Gold Music Disc',         1],
 	[2257, 0, 'Green Music Disc',        1],
 ]
@@ -1039,13 +1042,13 @@ class MCPlayerEdit(icmd.ICmdBase):
 			for name, value in obj.items():
 				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
 					#print str.lstrip("%s.%s" % (path, name), '.')
-					self.dump(value, '%s.%s' % (path, name))
+					self.nbtdump(value, '%s.%s' % (path, name))
 				else:
 					print str.lstrip("%s.%s: %s" % (path, name, value.value), '.')
 		if isinstance(obj, nbt.TAG_List):
 			for value in obj:
 				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
-					self.dump(value, path)
+					self.nbtdump(value, path)
 				else:
 					print str.lstrip("%s: %s" % (path, value.value), '.')
 
