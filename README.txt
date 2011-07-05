@@ -8,6 +8,7 @@ MCPlayerEdit is a Minecraft player- and inventory editor.
 
 Features include:
 
+- Change player health (including god-mode)
 - Modifying the inventory.
 - Adding kits (collections of items) to the inventory.
 - Showing and moving the player and spawn point coordinates.
@@ -16,6 +17,7 @@ Features include:
 - Track your inventory in case of death.
 - Showing the random seed for your world.
 - Controlling the weather (turn on/off rain/snow/thunder for a specified time).
+- Lose-me function: randomly transport player N meters from current location.
 - Commandline history
 - Commandline tab-completion (only on GNU/Linux, WinXP for now)
 

@@ -1254,6 +1254,38 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		self._output("It will %sthunder for %i seconds (real time)" % (['not ', ''][onoff], time))
 
+	def health(self, number):
+		"""
+		Control player health.
+		Controls the player health. NUMBER is a number from 0 to 20 where 0 is
+		death and 20 is full health. You may also specify 'death' or 'full'.
+
+		In non-safe mode (see `help safemode`) you may specify high numbers up
+		to 32767 and the 'god' keyword, which will give you health that will let
+		you survive things you'd normally wouldn't.
+		"""
+		self._checkloaded()
+
+		keys = {
+			'death': 0,
+			'full': 20,
+			'god': 32767,
+		}
+
+		try:
+			number = int(number)
+		except ValueError:
+			if number in keys:
+				number = keys[number]
+			else:
+				raise MCPlayerEditError(16, "Invalid value for number parameter. Specify a number 0-20.")
+
+		if self.safe_mode and (number < 0 or number > 20):
+			raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and that numbe is not safe to use in Safe mode. See 'help safemode'")
+
+		self.level['Data']['Player']['Health'].value = number
+		self._output("Health set to %i" % (number))
+
 	def safemode(self, onoff):
 		"""
 		Turn on/off safe mode

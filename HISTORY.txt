@@ -1,3 +1,6 @@
+v0.19 ()
+ - Added a `health` command which lets you set the player health (also a god-mode)
+
 v0.18 (05 July 2011)
  - Made leaves available in safe-mode.
  - Added a `remove` command which allows the user to remove items from the inventory by name/id instead of slots. (Suggestion by rowanxim)
