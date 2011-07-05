@@ -609,8 +609,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		List the players current inventory
 		List the players current inventory. `type` can be 'quick', 'normal' or
 		'armor' to list the quick inventory, normal inventory and armor
-		inventory. 'all' will list your entire inventory, which is also the
-		default if no `type` is specified.
+		inventory or alternatively a slot id or item type. 'all' will list your
+		entire inventory, which is also the default if no `type` is specified.
 
 		Examples:
 
@@ -621,24 +621,44 @@ class MCPlayerEdit(icmd.ICmdBase):
 		slot   1 (quick inventory):  1 x Stone Shovel
 		slot   2 (quick inventory): 42 x Dirt
 		...
+
+		> list 10
+		slot  10: 64 x Dirt
+
+		> list log
+		slot  29: 48 x Log
 		"""
 		self._checkloaded()
+		inventory = self._getinventory()
 
-		inventory = [None] * 104
-		for slot in self.level['Data']['Player']['Inventory']:
-			inventory[slot['Slot'].value] = slot
-
-		for slot in invmap:
-			if slot[1] == type or type == 'all':
-				print 'slot %3i (%6s inventory):' % (slot[0], slot[1]),
-				if inventory[slot[0]]:
-					item = itemdb.nbt_to_name(inventory[slot[0]])
-					if not item:
-						print '%2i x %s (%i)' % (inventory[slot[0]]['Count'].value, 'Unknown?', inventory[slot[0]]['id'].value)
+		if type not in ['all', 'quick', 'normal', 'armor']:
+			# List by slot nr or item name
+			slot_id, list_item = self._item_resolve(type)
+			for slot in inventory:
+				if \
+					slot and \
+					(
+						slot['Slot'].value == slot_id or \
+						(
+							slot['id'].value == list_item['id'] and \
+							slot['Damage'].value == list_item['damage']
+						)
+					):
+						item = itemdb.nbt_to_name(slot)
+						print 'slot %3i: %2i x %s' % (slot['Slot'].value, slot['Count'].value, item['name'])
+		else:
+			# List by type / all
+			for slot in invmap:
+				if slot[1] == type or type == 'all':
+					print 'slot %3i (%6s inventory):' % (slot[0], slot[1]),
+					if inventory[slot[0]]:
+						item = itemdb.nbt_to_name(inventory[slot[0]])
+						if not item:
+							print '%2i x %s (%i)' % (inventory[slot[0]]['Count'].value, 'Unknown?', inventory[slot[0]]['id'].value)
+						else:
+							print '%2i x %s' % (inventory[slot[0]]['Count'].value, item['name'])
 					else:
-						print '%2i x %s' % (inventory[slot[0]]['Count'].value, item['name'])
-				else:
-					print
+						print
 
 	def give(self, count, *args):
 		"""
@@ -1363,7 +1383,7 @@ class MCPlayerCmd(icmd.ICmd):
 		elif line.startswith('kit'):
 			w = [key for key in kits.keys() if key.lower().startswith(text.lower())]
 		elif line.startswith('list'):
-			w = [l for l in ('all', 'quick', 'normal', 'armor') if l.startswith(text)]
+			w = [l for l in ['all', 'quick', 'normal', 'armor'] + [item['name'] for item in itemdb.select(lambda row: row['name'].lower().startswith(text.lower()))] ]
 		elif line.startswith('move'):
 			w = [l for l in ('player', 'spawn') if l.startswith(text)]
 		elif line.startswith('settime'):

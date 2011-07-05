@@ -128,6 +128,10 @@ Some usage examples:
     slot   1 ( quick inventory):  1 x Iron Sword
     ...
 
+	New World> list cobblestone
+	slot  12: 64 x Cobblestone
+	slot  34: 17 x Cobblestone
+
     New World> items tn
        46: TNT
 

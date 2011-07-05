@@ -1,6 +1,7 @@
 v0.18 (05 July 2011)
  - Made leaves available in safe-mode.
  - Added a `remove` command which allows the user to remove items from the inventory by name/id instead of slots. (Suggestion by rowanxim)
+ - Extended the `list` command so the user can now list items by slot id or item name.
 
 v0.17 (01 July 2011) for MC Beta 1.7
  - Lava and Water buckets can now be added to the inventory in safe-mode.
