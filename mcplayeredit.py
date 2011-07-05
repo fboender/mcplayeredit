@@ -401,6 +401,64 @@ class MCPlayerEdit(icmd.ICmdBase):
 			inventory[slot['Slot'].value] = slot
 		return(inventory)
 
+	def _item_resolve(self, count, *args):
+		"""
+		Determine which items the user is refering to and how many (s)he wants.
+		Handles empty counts, item names, item ids and items which are
+		identified by damage ID (wool, saplings, etc).
+
+		Used by `give` and `remove`. Returns a tuple: (count, iteminfo) where
+		count is the total number the user wants to add (can be >
+		max_stack_size) or None if the user didn't specify a count, and item
+		which is a dictionary with item information (max_stack, id, name and
+		damage).
+		"""
+		if not args:
+			item = count
+		else:
+			item  = ' '.join(args)
+
+		try:
+			count = int(count)
+		except ValueError:
+			item = ' '.join((count,) + args)
+			count = None
+		except TypeError:
+			# if count == None the count will later on become max_stack size.
+			count = None
+
+		# Find out which item the user is trying to add
+		itemid = None
+		iteminfo = None
+		try:
+			# Try to get the item by numeric ID.
+			itemid = int(item)
+			items = itemdb.select(lambda row: row['id'] == itemid)
+
+			if len(items) > 1:
+				# Multiple items with the same id. Allow user to select by damage
+				print "\nThere are multiple items with that ID:"
+				for i_item in items:
+					print "%5s: %s" % (i_item['damage'], i_item['name'])
+				damage = raw_input('Select a number or nothing to abort: ')
+				if not damage:
+					return
+				d_item = itemdb.getx(id=itemid, damage=int(damage))
+				if d_item:
+					iteminfo = d_item
+			else:
+				iteminfo = itemdb.getx(id=itemid, damage=0)
+		except ValueError:
+			# Try to get the item by name
+			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
+			if rows:
+				iteminfo = rows[0]
+
+		if not iteminfo:
+			raise MCPlayerEditError(6, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
+
+		return(count, iteminfo)
+
 	def _invadd(self, items):
 		"""
 		Add ITEMS to the users inventory. ITEMS is a list where each member is
@@ -615,50 +673,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		if not args:
-			item = count
-		else:
-			item  = ' '.join(args)
-
-		try:
-			count = int(count)
-		except ValueError:
-			item = ' '.join((count,) + args)
-			count = None
-		except TypeError:
-			# if count == None the count will later on become max_stack size.
-			count = None
-
-		# Find out which item the user is trying to add
-		itemid = None
-		add_item = None
-		try:
-			# Try to get the item by numeric ID.
-			itemid = int(item)
-			items = itemdb.select(lambda row: row['id'] == itemid)
-
-			if len(items) > 1:
-				# Multiple items with the same id. Allow user to select by damage
-				print "\nThere are multiple items with that ID:"
-				for i_item in items:
-					print "%5s: %s" % (i_item['damage'], i_item['name'])
-				damage = raw_input('Select a number or nothing to abort: ')
-				if not damage:
-					return
-				d_item = itemdb.getx(id=itemid, damage=int(damage))
-				if d_item:
-					add_item = d_item
-			else:
-				add_item = itemdb.getx(id=itemid, damage=0)
-		except ValueError:
-			# Try to get the item by name
-			rows = itemdb.select(lambda row: row['name'].lower() == item.lower())
-			if rows:
-				add_item = rows[0]
-
-		if not add_item:
-			raise MCPlayerEditError(6, "Unknown item '%s'. Use the `items` command for list a possible items. You may specify an ID or the item name" % (item))
-
+		# Determine which item and how much the user wants to add.
+		count, add_item = self._item_resolve(count, *args)
 		# If count not given, set to max_stack size.
 		if not count:
 			count = add_item['max_stack']
@@ -684,6 +700,60 @@ class MCPlayerEdit(icmd.ICmdBase):
 			self._output("Added %i x %s in slot %i" % (stack[0], add_item['name'], assignedslots[0]))
 
 		self.modified = True
+
+	def remove(self, count, *args):
+		"""
+		Remove items from inventory by name/id.
+		Usage: remove [count] <item>
+		Tries to remove COUNT times ITEM from the player inventory. If no count is
+		given, removes all items of the given type. ITEM may be an item
+		ID (see the `items` command) or the name of an item.
+
+		Sometimes multiple items have the same ID. If you select such an item
+		by id, you will be given an additional option menu from which you can
+		chose which item you want.
+
+		Examples:
+		> remove dirt
+		Removed all Dirt
+
+		> remove 10 cobblestone
+		Removed 10 x Cobblestone
+
+		> remove 400 cobblestone
+		Removed 400 x Cobblestone
+
+		> remove 64 1
+		Removed 64 x Stone
+		"""
+		self._checkloaded()
+
+		# Determine which item and how much the user wants to add.
+		# If count not given, deletes all from inventory
+		count, del_item = self._item_resolve(count, *args)
+
+		inventory = self.level['Data']['Player']['Inventory']
+
+		i = 0
+		del_count = count
+		while i < len(inventory):
+			if \
+				inventory[i]['id'].value == del_item['id'] and \
+				inventory[i]['Damage'].value == del_item['damage']:
+					if del_count == None or del_count >= inventory[i]['Count'].value:
+						if del_count != None:
+							del_count -= inventory[i]['Count'].value
+						inventory.pop(i)
+					else:
+						inventory[i]['Count'].value -= del_count
+						break
+			else:
+				i += 1
+
+		if count == None:
+			self._output("Removed all %s" % (del_item['name']))
+		else:
+			self._output("Removed %i x %s" % (count, del_item['name']))
 
 	def kit(self, kit = None, *args):
 		"""
@@ -782,6 +852,8 @@ class MCPlayerEdit(icmd.ICmdBase):
 		Clear a slot in the inventory. SLOT is a slot id (see the `list`
 		command). You may also specify 'all' as the slot ID to clear the entire
 		inventory.
+
+		See also the `remove` command.
 		"""
 		self._checkloaded()
 
@@ -1286,7 +1358,7 @@ class MCPlayerCmd(icmd.ICmd):
 		"""
 		# Get icmd module's readline buffer, instead of 'our' module's instance.
 		line = icmd.readline.get_line_buffer()
-		if line.startswith('give'):
+		if line.startswith('give') or line.startswith('remove'):
 			w = [item['name'] for item in itemdb.select(lambda row: row['name'].lower().startswith(text.lower()))]
 		elif line.startswith('kit'):
 			w = [key for key in kits.keys() if key.lower().startswith(text.lower())]

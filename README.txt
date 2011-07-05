@@ -19,6 +19,10 @@ Features include:
 - Commandline history
 - Commandline tab-completion (only on GNU/Linux, WinXP for now)
 
+MCPlayerEdit normally operates in safe-mode, during which it is not possible
+to add items to the inventory which cannot be obtained in the game. To turn
+safe-mode off, see the `safemode` command.
+
 !! WARNING !!
 
   This software may corrupt your Minecraft save file(s), and sneak up on you
@@ -150,12 +154,15 @@ Some usage examples:
     New World> give 64 264
     Added 64 x Diamond in slot 3
 
-	New World> give 264
-	Added 64 x Diamond in slot 4
+    New World> give 264
+    Added 64 x Diamond in slot 4
 
-	New World> give 128 Log
-	Added 64 x Log in slot 5
-	Added 64 x Log in slot 6
+    New World> give 128 Log
+    Added 64 x Log in slot 5
+    Added 64 x Log in slot 6
+
+    New World> remove 128 Log
+    Removed 128 x Log
 
     New World> bookmark Pit of DOOM
     Bookmark 'Pit of DOOM' created.
@@ -168,6 +175,9 @@ Some usage examples:
     New World> warp Isle of Despair
     Warped player position to Isle of Despair
 
+    New World> settime sunrise
+    Time of day set to sunrise
+    
     New World> save
     Saved. Backup created (/home/user/.minecraft/saves/New World/level.dat.bak)
    
@@ -205,6 +215,7 @@ Credits:
     Dustin Pyle      (kitsave patch)
     Stephen Rollyson (bugfixes, patches)
     Rilian4          (ideas, patches)
+	rowanxim         (suggestions)
 
 Development
 -----------
