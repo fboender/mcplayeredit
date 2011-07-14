@@ -404,6 +404,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		if not args:
 			item = count
+			count = None
 		else:
 			item  = ' '.join(args)
 
@@ -856,6 +857,9 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 		for item in items:
 			print '%5i: %s' % (item['id'], item['name'])
+
+		if self.safe_mode:
+			print "\nSafemode is ON. Some items may not be listed."
 
 	def clear(self, slot):
 		"""

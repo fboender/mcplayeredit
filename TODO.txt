@@ -1,23 +1,5 @@
 This is a list of things which still need work in MCPlayerEdit.
 
-- Tab completion does not take safe-mode in account.
-
-- Split Unsafe and MaxStack size:
-
-	Testing> give Dead Shrub
-	Added 0 x Dead Shrub in slot 16
-
-  Should give max stack instead.
-
-- The 'give' command should give the max stack size if no stack size is
-  specified. This doesn't seem work when the user specified a numerical id:
-
-	Testing> give 1
-	Added 1 x Stone in slot 5
-
-  This should have given 64 Stone. Perhaps MCPlayerEdit interprets '1' as the
-  count, not the item id.
-
 - Error on save when stack size > 127
 
 	Testing> give 128 diamond shovel
@@ -30,6 +12,7 @@ This is a list of things which still need work in MCPlayerEdit.
 - Fix %%VERSION%% replacement on release buildrule.
 
 - autocomplete needs work
+  * Tab completion does not take safe-mode in account.
   * Values with spaces are not quoted/escaped properly.
   * Autocomplete on mac
   * completing 'kit' doesn't show 'kitsave'.
