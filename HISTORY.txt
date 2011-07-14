@@ -1,5 +1,7 @@
-v0.19 ()
+v0.19 (14 July 2011)
  - Added a `health` command which lets you set the player health (also a god-mode)
+ - Fixed a bug where only supplying an item ID to give/remove would not give the maximum stack size but would give a stack equal in size to the item ID specified.
+ - Fixed a bug where adding non-safe items to the inventory would give a stack size of 0.
 
 v0.18 (05 July 2011)
  - Made leaves available in safe-mode.
