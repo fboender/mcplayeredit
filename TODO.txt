@@ -1,5 +1,7 @@
 This is a list of things which still need work in MCPlayerEdit.
 
+- Tab completion does not take safe-mode in account.
+
 - Split Unsafe and MaxStack size:
 
 	Testing> give Dead Shrub
