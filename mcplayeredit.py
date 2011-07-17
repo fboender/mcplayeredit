@@ -63,6 +63,8 @@ itemsdb_data = [
 	[17,   1, 'Redwood',                 64, True],
 	[17,   2, 'Birch',                   64, True],
 	[18,   0, 'Leaves',                  64, True],
+	[18,   1, 'Pine Leaves',             64, True],
+	[18,   2, 'Birch Leaves',            64, True],
 	[19,   0, 'Sponge',                  64, False],
 	[20,   0, 'Glass',                   64, True],
 	[21,   0, 'Lapis Lazuli Ore',        64, False],
