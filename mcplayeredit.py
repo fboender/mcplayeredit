@@ -1124,7 +1124,7 @@ class MCPlayerEdit(icmd.ICmdBase):
 		"""
 		self._checkloaded()
 
-		if not obj:
+		if obj == None:
 			obj = self.level
 
 		if isinstance(obj, nbt.TAG_Compound):
@@ -1134,12 +1134,19 @@ class MCPlayerEdit(icmd.ICmdBase):
 					self.nbtdump(value, '%s.%s' % (path, name))
 				else:
 					print str.lstrip("%s.%s: %s" % (path, name, value.value), '.')
-		if isinstance(obj, nbt.TAG_List):
-			for value in obj:
-				if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
-					self.nbtdump(value, path)
-				else:
-					print str.lstrip("%s: %s" % (path, value.value), '.')
+		elif isinstance(obj, nbt.TAG_List):
+			if obj:
+				for value in obj:
+					if isinstance(value, (nbt.TAG_Compound, nbt.TAG_List)):
+						self.nbtdump(value, path)
+					else:
+						print str.lstrip("%s: %s" % (path, value.value), '.')
+			else:
+				# Empty 
+				print str.lstrip("%s: (EMPTY)" % (path), '.')
+
+		else:
+			print "Unsuported NBT instance type", type(obj)
 
 	def nbtset(self, path, value):
 		"""
