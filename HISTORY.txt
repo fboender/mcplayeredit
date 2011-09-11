@@ -1,5 +1,35 @@
 v0.20 ()
- - Added Pine and Birch leaves.
+ - Added items:
+   * Pine leaves
+   * Birch leaves
+   * (Double) Brick Slab
+   * (Double) Stone Brick Slab
+   * Stone With Silverfish
+   * Stonebrick
+   * Mossy Stonebrick (buggy)
+   * Cracked Stonebrick (buggy)
+   * Brick Stairs
+   * Stone Brick Stairs
+   * Huge Brown Mushroom (buggy)
+   * Huge Red Mushroom (buggy)
+   * Iron Bars
+   * Glass Pane
+   * Melon
+   * Pumpkin Stem
+   * Melon Stem
+   * Vines
+   * Fence Gate
+   * Melon Slice
+   * Pumpkin Seeds
+   * Melon Seeds
+   * Raw Beef
+   * Steak
+   * Raw Chicken
+   * Cooked Chicken
+   * Rotten Flesh
+   * Ender Pearl
+ - Added 'gametype' command to switch between Creative and Survival mode
+ - Added 'food' command to control player food.
 
 v0.19 (14 July 2011)
  - Added a `health` command which lets you set the player health (also a god-mode)

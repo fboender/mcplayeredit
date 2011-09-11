@@ -101,14 +101,17 @@ itemsdb_data = [
 	[40,   0, 'Red Mushroom',            64, True],
 	[41,   0, 'Gold Block',              64, True],
 	[42,   0, 'Iron Block',              64, True],
-	[43,   0, 'Double Stone Slab',       64, True],
-	[43,   1, 'Double Sandstone Slab',   64, True],
-	[43,   2, 'Double Wooden Slab',      64, True],
-	[43,   3, 'Double Cobblestone Slab', 64, True],
-	[44,   0, 'Stone Slab',              64, True],
+	[43,   0, 'Double Stone Slab',       64, False],
+	[43,   1, 'Double Sandstone Slab',   64, False],
+	[43,   2, 'Double Wooden Slab',      64, False],
+	[43,   3, 'Double Cobblestone Slab', 64, False],
+	[43,   4, 'Double Brick Slab',       64, False],
+	[43,   5, 'Double Stone Brick Slab', 64, False],
 	[44,   1, 'Sandstone Slab',          64, True],
 	[44,   2, 'Wooden Slab',             64, True],
 	[44,   3, 'Cobblestone Slab',        64, True],
+	[44,   4, 'Brick Slab',              64, True],
+	[44,   5, 'Stone Brick Slab',        64, True],
 	[45,   0, 'Brick',                   64, True],
 	[46,   0, 'TNT',                     64, True],
 	[47,   0, 'Bookcase',                64, True],
@@ -161,6 +164,21 @@ itemsdb_data = [
 	[94,   0, 'Redstone Repeater On',    64, False],
 	[95,   0, 'Locked chest',            64, False],
 	[96,   0, 'Trapdoor',                64, True],
+	[97,   0, 'Stone with Silverfish',   64, False],
+	[98,   0, 'Stonebrick',              64, True],
+	[98,   1, 'Mossy Stonebrick',        64, False],
+	[98,   2, 'Cracked Stonebrick',      64, False],
+	[99,   0, 'Huge Brown Mushroom',     64, False],
+	[100,  0, 'Huge Red Mushroom',       64, False],
+	[101,  0, 'Iron bars',               64, True],
+	[102,  0, 'Glass Pane',              64, True],
+	[103,  0, 'Melon',                   64, False],
+	[104,  0, 'Pumpkin Stem',            64, False],
+	[105,  0, 'Melon Stem',              64, False],
+	[106,  0, 'Vines',                   64, True],
+	[107,  0, 'Fence Gate',              64, True],
+	[108,  0, 'Brick Stairs',            64, True],
+	[109,  0, 'Stone Brick Stairs',      64, True],
 	[256,  0, 'Iron Shovel',             1, True],
 	[257,  0, 'Iron Pickaxe',            1, True],
 	[258,  0, 'Iron Axe',                1, True],
@@ -281,6 +299,15 @@ itemsdb_data = [
 	[357,  0, 'Cookie',                  8, True],
 	[358,  0, 'Map',                     1, True],
 	[359,  0, 'Shears',                  1, True],
+	[360,  0, 'Melon Slice',            64, True],
+	[361,  0, 'Pumpkin Seeds',            64, True],
+	[362,  0, 'Melon Seeds',            64, True],
+	[363,  0, 'Raw Beef',               64, True],
+	[364,  0, 'Steak',                  64, True],
+	[365,  0, 'Raw Chicken',            64, True],
+	[366,  0, 'Cooked Chicken',         64, True],
+	[367,  0, 'Rotten Flesh',           64, True],
+	[368,  0, 'Ender Pearl',            64, True],
 	[2256, 0, 'Gold Music Disc',         1, True],
 	[2257, 0, 'Green Music Disc',        1, True],
 ]
@@ -293,6 +320,11 @@ invmap = \
 dimensions = {
 	-1: 'Nether',
 	0: 'Normal',
+}
+
+gametypes = {
+	0: 'Survival',
+	1: 'Creative',
 }
 
 defaultkits = { # Only used if kits.dat doesn't exist.
@@ -536,6 +568,9 @@ class MCPlayerEdit(icmd.ICmdBase):
 
 			try:
 				self.level = nbt.load(worldfile)
+				if not 'GameType' in self.level['Data']:
+					raise MCPlayerEditError(21, "Invalid version. This editor is for Minecraft v1.8. Please get an older version.")
+
 				self.worldname = worldname
 				self.filename = worldfile
 				self.icmd.prompt = '%s> ' % (worldname)
@@ -846,10 +881,6 @@ class MCPlayerEdit(icmd.ICmdBase):
 		if search:
 			search = search.lower()
 			items = itemdb.select(lambda row: search in row['name'].lower() and row['safe'] in (True, self.safe_mode), cmp)
-			#if self.safe_mode:
-			#	items = itemdb.select(lambda row: search in row['name'].lower() and row['max_stack'] > 0, cmp)
-			#else:
-			#	items = itemdb.select(lambda row: search in row['name'].lower(), cmp)
 		else:
 			items = itemdb.select(lambda row: row['safe'] in (True, self.safe_mode))
 			#if self.safe_mode:
@@ -1068,6 +1099,28 @@ class MCPlayerEdit(icmd.ICmdBase):
 		self.level['Data']['Player']['Pos'][2].value = z
 		self._output('Warped player position to %8f %8f %8f (%s Dimension)' % (x, y, z, dimensions[dimension]))
 
+	def gametype(self, gametype=None):
+		"""
+		Change the gametype (Survival / Creative)
+		Changes the gametype to survival or creative. With no parameter, shows
+		the current gametype.
+
+		CAREFUL: This will destroy your current inventory!
+		"""
+		self._checkloaded()
+
+		if not gametype:
+			self._output("Current gametype: %s" % (gametypes[self.level['Data']['GameType'].value]))
+		else:
+			self._checkunsafe()
+			for k, v in gametypes.items():
+				if gametype.lower() == v.lower():
+					self._output('Setting gametype to %s' % (v))
+					self.level['Data']['GameType'].value = k
+					break
+			else:
+				self._output("Invalid gametype: %s" % (gametype))
+
 	def trackinv(self):
 		"""
 		Restore inventory after dying
@@ -1285,10 +1338,42 @@ class MCPlayerEdit(icmd.ICmdBase):
 				raise MCPlayerEditError(16, "Invalid value for number parameter. Specify a number 0-20.")
 
 		if self.safe_mode and (number < 0 or number > 20):
-			raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and that numbe is not safe to use in Safe mode. See 'help safemode'")
+			raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and that number is not safe to use in Safe mode. See 'help safemode'")
 
 		self.level['Data']['Player']['Health'].value = number
 		self._output("Health set to %i" % (number))
+
+	def food(self, number):
+		"""
+		Control player food.
+		Controls the player food. NUMBER is a number from 0 to 20 where 0 is
+		death and 20 is full food. You may also specify 'death' or 'full'.
+
+		In non-safe mode (see `help safemode`) you may specify high numbers up
+		to 32767 and the 'god' keyword, which will give you food that will let
+		you survive things you'd normally wouldn't.
+		"""
+		self._checkloaded()
+
+		keys = {
+			'death': 0,
+			'full': 20,
+			'god': 32767,
+		}
+
+		try:
+			number = int(number)
+		except ValueError:
+			if number in keys:
+				number = keys[number]
+			else:
+				raise MCPlayerEditError(16, "Invalid value for number parameter. Specify a number 0-20.")
+
+		if self.safe_mode and (number < 0 or number > 20):
+			raise MCPlayerEditError(19, "MCPlayerEdit is currently in Safe mode and that number is not safe to use in Safe mode. See 'help safemode'")
+
+		self.level['Data']['Player']['foodLevel'].value = number
+		self._output("Food set to %i" % (number))
 
 	def safemode(self, onoff):
 		"""
