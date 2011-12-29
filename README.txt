@@ -224,6 +224,7 @@ Credits:
     Stephen Rollyson (bugfixes, patches)
     Rilian4          (ideas, patches)
 	rowanxim         (suggestions)
+    Pedro Lopes      (patches)
 
 Development
 -----------

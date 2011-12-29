@@ -1,4 +1,4 @@
-v0.21 (29 December 2011) for MC 1.0
+v0.21 (29 December 2011) for MC 1.0 (Patch by Pedro Lopes)
  - Added items:
    * Mycelium
    * Lily Pad
