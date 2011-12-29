@@ -1,4 +1,45 @@
-v0.20 ()
+v0.21 (29 December 2011) for MC 1.0
+ - Added items:
+   * Mycelium
+   * Lily Pad
+   * Nether Brick
+   * Nether Brick Fence
+   * Nether Brick Stairs
+   * Nether Wart [block]
+   * Enchantment Table
+   * Brewing Stand [block]
+   * Cauldron [block]
+   * End Portal
+   * End Portal Frame
+   * End Stone
+   * Dragon Egg
+   * Blaze Rod
+   * Ghast Tear
+   * Gold Nugget
+   * Nether Wart
+   * Potion
+   * Glass Bottle
+   * Spider Eye
+   * Fermented Spider Eye
+   * Blaze Powder
+   * Magma Cream
+   * Brewing Stand
+   * Cauldron
+   * Eye of Ender
+   * Glistering Melon
+   * Spawner Egg
+   * Music Disc 1
+   * Music Disc 2
+   * Music Disc 3
+   * Music Disc 4
+   * Music Disc 5
+   * Music Disc 6
+   * Music Disc 7
+   * Music Disc 8
+   * Music Disc 9
+   * Music Disc 10
+   * Music Disc 11
+v0.20 (11 September 2011) for MC Beta 1.8
  - Added items:
    * Pine leaves
    * Birch leaves
