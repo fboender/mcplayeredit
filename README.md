@@ -1,5 +1,5 @@
-
-MCPlayerEdit  v%%VERSION%%
+MCPlayerEdit
+============
 
 About
 -----
@@ -8,35 +8,36 @@ MCPlayerEdit is a Minecraft player- and inventory editor.
 
 Features include:
 
-- Change player health (including god-mode).
-- Change player food (including god-mode).
-- Switch between Creative and Survival.
-- Modifying the inventory.
-- Adding kits (collections of items) to the inventory.
-- Showing and moving the player and spawn point coordinates.
-- Setting the in-game time of day.
-- Bookmark locations and warp back to them (works inter-dimensional).
-- Track your inventory in case of death.
-- Showing the random seed for your world.
-- Controlling the weather (turn on/off rain/snow/thunder for a specified time).
-- Lose-me function: randomly transport player N meters from current location.
-- Commandline history.
-- Commandline tab-completion (only on GNU/Linux, WinXP for now).
+*   Change player health (including god-mode).
+*   Change player food (including god-mode).
+*   Switch between Creative and Survival.
+*   Modifying the inventory.
+*   Adding kits (collections of items) to the inventory.
+*   Showing and moving the player and spawn point coordinates.
+*   Setting the in-game time of day.
+*   Bookmark locations and warp back to them (works inter-dimensional).
+*   Track your inventory in case of death.
+*   Showing the random seed for your world.
+*   Controlling the weather (turn on/off rain/snow/thunder for a specified time).
+*   Lose-me function: randomly transport player N meters from current location.
+*   Commandline history.
+*   Commandline tab-completion (only on GNU/Linux, WinXP for now).
 
 MCPlayerEdit normally operates in safe-mode, during which it is not possible
 to add items to the inventory which cannot be obtained in the game. To turn
 safe-mode off, see the `safemode` command.
 
-!! WARNING !!
+** WARNING **
 
-  This software may corrupt your Minecraft save file(s), and sneak up on you
-  when you least expect it and go SSSSSSssss BOOOM. You have been warned, make
-  backups!
+This software may corrupt your Minecraft save file(s), and sneak up on you
+when you least expect it and go SSSSSSssss BOOOM. You have been warned, make
+backups!
 
-  A backup of the level.dat file is automatically created when you make
-  changes. You can find it in your Minecraft Save game folder under the name
-  'level.dat.bak'. In case of emergency, scream, cry, rename 'level.dat.bak' to
-  'level.dat' and things should be alright again.
+A backup of the level.dat file is automatically created when you make
+changes. You can find it in your Minecraft Save game folder under the name
+'level.dat.bak'. In case of emergency, scream, cry, rename 'level.dat.bak' to
+'level.dat' and things should be alright again.
+
 
 Requirements
 ------------
@@ -47,58 +48,57 @@ Optionally:
 
 * readline (libreadline) for tab-completion support.
 
+
 Compatibility
 -------------
 
 Developed for and on:
 
-    Ubuntu 10.04 / Python 2.6.5
+*   Ubuntu 10.04 / Python 2.6.5
 
 Confirmed to be working on:
 
-    - Ubuntu 10.04
-    - Windows XP (Limited tab-completion functionality)
-    - Windows 7 (Limited tab-completion functionality)
-    - Mac OS X 10.5.5
+*   Ubuntu 10.04
+*   Windows XP (Limited tab-completion functionality)
+*   Windows 7 (Limited tab-completion functionality)
+*   Mac OS X 10.5.5
 
 Should work on:
 
-    - Every Unix-like OS
-    - MacOSX
-    - Windows Vista
+*   Every Unix-like OS
+*   MacOSX
+*   Windows Vista
 
 Usage
 -----
 
-GNU/Linux, Unix-compatible:
+### GNU/Linux, Unix-compatible:
 
-    Unpack the tarball
+Unpack the tarball
 
     $ tar -vxzf mcplayeredit-%%VERSION%%.tar.gz
 
-    Start MCPlayerEdit
+Start MCPlayerEdit
 
     $ cd mcplayeredit
     $ python ./mcplayeredit
     > load <worldname>
 
-Windows (XP, 7):
+### Windows (XP, 7):
 
-    - Unpack mcplayeredit-%%VERSION%%.zip with something like 7zip.
-    - Navigate to the mcplayeredit folder
-    - Double click the 'mcplayeredit.py' file.
+*   Unpack mcplayeredit-%%VERSION%%.zip with something like 7zip.
+*   Navigate to the mcplayeredit folder
+*   Double click the 'mcplayeredit.py' file.
 
-MacOS X:
+### MacOS X (Using Finder)
 
-    Using Finder
-
-    - Download mcplayeredit-%%VERSION%%.tar.gz 
-    - Open the containing folder
-    - Double-click the .tar.gz file to extract it.
-    - Open the extracted mcplayeredit-0.11 folder
-    - Double-click the 'mcplayeredit.py' file. This will most likely open it in
-      the Python IDLE editor
-    - Press F5 to run the Python script.
+*   Download mcplayeredit-%%VERSION%%.tar.gz 
+*   Open the containing folder
+*   Double-click the .tar.gz file to extract it.
+*   Open the extracted mcplayeredit-0.11 folder
+*   Double-click the 'mcplayeredit.py' file. This will most likely open it in
+    the Python IDLE editor
+*   Press F5 to run the Python script.
 
 Make sure you are not playing the World in Minecraft before loading the level
 in MCPlayerEdit, or your changes will not take effect. You can modify a world
@@ -111,8 +111,8 @@ changes.
 
 Some usage examples:
 
-    (You can use tab completion if your on Linux. Tab completion also works on
-    Win XP/7, but is not as full-featured as on *Nix systems)
+*(You can use tab completion if your on Linux. Tab completion also works on
+Win XP/7, but is not as full-featured as on *Nix systems)*
 
     > load
     The following worlds are available for loading:
@@ -206,7 +206,7 @@ This program uses a modified version of the NBT library from pymclevel by
 Codewarrior0. The full library can be found at
 http://github.com/codewarrior0/pymclevel and is licensed under the MIT license.
 
-Credits:
+### Credits:
 
  Libs
 
@@ -231,19 +231,20 @@ Development
 
 Send bugs, feature requests, patches and beer to:
 
-  ferry.boender AT gmail.com
+    ferry.boender AT gmail.com
 
 Or:
 
-  ferry.boender AT electricmonk.nl
+    ferry.boender AT electricmonk.nl
 
-Subversion repository is here:
+Git repository is here:
 
-  https://svn.electricmonk.nl/svn/mcplayeredit/trunk/
+    https://bitbucket.org/fboender/mcplayeredit/src
   
-Please provide patches in Unified Diff format:
+Please send merge requests using Bitbucket or provide patches in Unified Diff
+format:
 
-  diff -Naur OLDFILE NEWFILE > mcplayeredit-DESCRIPTION.patch
+    diff -Naur OLDFILE NEWFILE > mcplayeredit-DESCRIPTION.patch
 
 In case the patch gets accepted, I will credit you in the revision logs,
 HISTORY.txt and README.txt with the name from your email (I will not include
