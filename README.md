@@ -27,7 +27,11 @@ MCPlayerEdit normally operates in safe-mode, during which it is not possible
 to add items to the inventory which cannot be obtained in the game. To turn
 safe-mode off, see the `safemode` command.
 
-** WARNING **
+### Screenshots
+
+*   [Screenshots](https://bitbucket.org/fboender/mcplayeredit/wiki/Screenshots)
+
+### WARNING 
 
 This software may corrupt your Minecraft save file(s), and sneak up on you
 when you least expect it and go SSSSSSssss BOOOM. You have been warned, make
