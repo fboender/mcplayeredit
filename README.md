@@ -1,6 +1,12 @@
 MCPlayerEdit
 ============
 
+**NOTICE: MCPlayerEdit no longer works with newer versions of Minecraft. 
+The storage format has changed and most / all features provided by 
+MCPlayerEdit are now offered directly in Minecraft via player commands. 
+MCPlayerEdit is *no longer being maintained*. If you want to take over 
+development, drop me an email at the address listed below.**
+
 About
 -----
 
